@@ -2,11 +2,12 @@ package org.sparta.newsfeed.comment.entity;
 
 
 import jakarta.persistence.*;
+import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
 
 @Table(name = "comment_like")
 @Entity
-public class CommentLike {
+public class CommentLike extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentLikeId;
