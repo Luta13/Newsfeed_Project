@@ -37,22 +37,22 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Board> scheduleList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Comment> commentList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Friend> baseList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Friend> friendList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<BoardLike> boardLikeList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<CommentLike> commentLikeList = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Board> scheduleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "baseEmail")
+    private List<Friend> baseList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "friendEmail")
+    private List<Friend> friendList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<BoardLike> boardLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<CommentLike> commentLikeList = new ArrayList<>();
 
 }
