@@ -16,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "user")
 public class User extends Timestamped {
@@ -55,4 +54,8 @@ public class User extends Timestamped {
         this.refreshToken = token;
     }
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
