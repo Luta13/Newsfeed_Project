@@ -49,4 +49,8 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
+    public void updateToken(String token) {
+        this.refreshToken = token;
+    }
+
 }
