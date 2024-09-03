@@ -17,11 +17,11 @@ public class Friend extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "baseId", nullable = false)
-    private User baseEmail;
+    private User baseId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "friendId", nullable = false)
-    private User friendEmail;
+    private User friendId;
 
     @Column(nullable = false)
     private boolean applyYn;
