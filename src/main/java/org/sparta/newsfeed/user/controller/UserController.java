@@ -1,5 +1,6 @@
 package org.sparta.newsfeed.user.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
@@ -30,9 +31,9 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto) {
-        userService.loginUser(userLoginDto);
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Login user"));
+    public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto , HttpServletResponse response) {
+        response.addHeader("Authorization", userService.loginUser(userLoginDto));
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "로그인에 성공했습니다."));
     }
 
     // 로그아웃
