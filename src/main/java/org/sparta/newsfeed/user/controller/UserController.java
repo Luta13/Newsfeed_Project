@@ -46,13 +46,13 @@ public class UserController {
     // 자신의 프로필 조회
     @GetMapping("/profile")
     public ResponseEntity<ResponseDto<UserProfileDto>> getProfile(@Auth AuthUser authUser) {
-        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getProfile(authUser.getUserId()) , "Profile"));
+        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getProfile(authUser.getUserId()) , "프로필 조회했습니다."));
     }
 
     // 다른 사용자 프로필 조회
     @GetMapping("/profile/user")
     public ResponseEntity<ResponseDto<UserProfileDto>> getUserProfile(@RequestParam String email) {
-        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getUserProfile(email) , "Profile"));
+        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getUserProfile(email) , "프로필 조회했습니다."));
     }
 
     // 비밀번호 변경
