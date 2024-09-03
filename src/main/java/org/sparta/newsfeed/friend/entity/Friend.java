@@ -3,8 +3,12 @@ package org.sparta.newsfeed.friend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,8 +27,10 @@ public class Friend extends Timestamped {
     @JoinColumn(name = "friendId", nullable = false)
     private User friendId;
 
+    @Setter
     @Column(nullable = false)
     private boolean applyYn;
+
 
 
     public Friend(User baseId, User friendId, boolean applyYn){

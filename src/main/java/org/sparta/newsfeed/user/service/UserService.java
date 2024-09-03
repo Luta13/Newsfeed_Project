@@ -12,6 +12,8 @@ import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -95,7 +97,7 @@ public class UserService {
 
         // 새로운 비밀번호 암호화 및 저장
         String encodedNewPassword = passwordEncoder.encode(newPassword);
-        user.changePassword(encodedNewPassword);
+        //user.changePassword(encodedNewPassword);
         userRepository.save(user);
     }
 
