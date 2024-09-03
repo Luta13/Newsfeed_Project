@@ -1,6 +1,8 @@
 package org.sparta.newsfeed.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.sparta.newsfeed.common.annotation.Auth;
+import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +40,8 @@ public class UserController {
 
     // 자신의 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<String> getProfile() {
+    public ResponseEntity<String> getProfile(@Auth AuthUser authUser) {
+        System.out.println(authUser.getUserId() + " " + authUser.getEmail());
         return ResponseEntity.ok("Profile");
     }
 

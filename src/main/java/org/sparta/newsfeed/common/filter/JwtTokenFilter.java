@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j(topic = "JwtTokenFilter")
 @RequiredArgsConstructor
@@ -40,8 +41,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "인증에 실패했습니다.");
                 } else {
                     log.info("토큰 검증 성공");
-                    Claims info = jwtUtil.getUserInfoFromToken(token , "ACCESS");
-                    String authority = (String) info.get(jwtUtil.AUTHORIZATION_KEY);
+                    Claims claims = jwtUtil.getUserInfoFromToken(token , "ACCESS");
+
+                    HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+                    // 사용자 정보를 ArgumentResolver 로 넘기기 위해 HttpServletRequest 에 세팅
+                    httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
+                    httpRequest.setAttribute("email", claims.get("email", String.class));
 
                 }
             } else {

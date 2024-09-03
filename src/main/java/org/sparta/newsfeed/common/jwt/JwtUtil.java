@@ -43,7 +43,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String value , String type) {
+    public String createToken(Long userId , String email , String type) {
         Date date = new Date();
 
         Key key = type.equals("ACCESS") ? accessKey : refreshKey;
@@ -51,7 +51,8 @@ public class JwtUtil {
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                    .setSubject(value) // 사용자 식별자값(ID)
+                    .setSubject(String.valueOf(userId)) // 사용자 식별자값(ID)
+                    .claim("email" , email)
                     .setExpiration(new Date(date.getTime() + time)) // 만료 시간
                     .setIssuedAt(date) // 발급일
                     .signWith(key, signatureAlgorithm) // 암호화 알고리즘
@@ -89,7 +90,11 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token , String type) {
         Key key = type.equals("ACCESS") ? accessKey : refreshKey;
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
 
