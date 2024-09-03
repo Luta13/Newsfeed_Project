@@ -2,11 +2,10 @@ package org.sparta.newsfeed.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
-import org.sparta.newsfeed.user.dto.UserRegisterDto;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
 import org.sparta.newsfeed.user.dto.UserProfileDto;
-import org.sparta.newsfeed.user.entity.User;
+import org.sparta.newsfeed.user.dto.UserRegisterDto;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.entity.UserStatusEnum;
 import org.sparta.newsfeed.user.repository.UserRepository;
