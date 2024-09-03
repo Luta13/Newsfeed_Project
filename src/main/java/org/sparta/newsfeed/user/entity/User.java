@@ -61,4 +61,9 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
         this.status = status;
     }
+
+    // 비밀번호 변경
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
