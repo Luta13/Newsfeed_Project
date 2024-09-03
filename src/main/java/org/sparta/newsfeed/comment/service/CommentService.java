@@ -7,7 +7,7 @@ import org.sparta.newsfeed.comment.entity.CommentLike;
 import org.sparta.newsfeed.comment.repositroy.CommentRepository;
 import org.sparta.newsfeed.comment.repositroy.CommentLikeRepository;
 import org.sparta.newsfeed.board.entity.Board;
-import org.sparta.newsfeed.board.repositroy.BoardRepository;
+import org.sparta.newsfeed.board.repository.BoardRepository;
 import org.sparta.newsfeed.user.entity.User;
 import org.springframework.stereotype.Service;
 

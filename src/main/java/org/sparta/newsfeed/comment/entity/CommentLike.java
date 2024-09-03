@@ -20,5 +20,4 @@ public class CommentLike extends Timestamped {
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
 
-
 }
