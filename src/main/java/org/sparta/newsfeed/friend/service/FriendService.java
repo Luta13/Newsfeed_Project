@@ -1,6 +1,7 @@
 package org.sparta.newsfeed.friend.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.friend.dto.FriendResponseDto;
 import org.sparta.newsfeed.friend.entity.Friend;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class FriendService {
 
     private final FriendRepository friendRepository;
@@ -27,12 +29,17 @@ public class FriendService {
         User user = userService.findUserByEmail(authUser.getEmail());
         User requestUser = userService.findUserByEmail(requestEmail);
 
+        log.info("userEmail",user.getEmail());
+        log.info("requestEmail",requestUser.getEmail());
+
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
         }
-        if (user.equals(requestUser)) {
+        if (user.equals(requestUser)){
             throw new IllegalArgumentException("자신에게 친구 요청을 할 수 없습니다.");
         }
+
+
 
         Friend friend = new Friend(user, requestUser, false);
         friendRepository.save(friend);

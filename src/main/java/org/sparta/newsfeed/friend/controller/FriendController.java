@@ -1,5 +1,6 @@
 package org.sparta.newsfeed.friend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
@@ -19,22 +20,25 @@ public class FriendController {
 
     private final FriendService friendService;
     @PostMapping("/request")
-    public ResponseEntity<String> requestFriends(@Auth AuthUser authUser, String requestEmail){
+    public ResponseEntity<String> requestFriends(@Auth AuthUser authUser, HttpServletRequest request){
 
-        friendService.requestFriends(authUser,requestEmail);
+        String requestEmail = request.getAttribute("email").toString();
+        friendService.requestFriends(authUser, requestEmail);
         return ResponseEntity.status(200).body("친구추가 요청이 완료되었습니다.");
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelRequestFriends(@Auth AuthUser authUser, String requestEmail)
+    public ResponseEntity<String> cancelRequestFriends(@Auth AuthUser authUser,HttpServletRequest request)
     {
+        String requestEmail = request.getAttribute("email").toString();
         friendService.cancelRequestFriends(authUser,requestEmail);
         return ResponseEntity.status(204).body("친구추가 요청이 반려되엇습니다");
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<String> deleteFriends(@Auth AuthUser authUser, String requestEmail)
+    public ResponseEntity<String> deleteFriends(@Auth AuthUser authUser, HttpServletRequest request)
     {
+        String requestEmail = request.getAttribute("email").toString();
         friendService.deleteFriends(authUser, requestEmail);
         return ResponseEntity.status(200).body("친구삭제가 완료되었습니다.");
     }
@@ -51,14 +55,16 @@ public class FriendController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<String> acceptFriends(@Auth AuthUser authUser, String requestEmail)
+    public ResponseEntity<String> acceptFriends(@Auth AuthUser authUser, HttpServletRequest request)
     {
+        String requestEmail = request.getAttribute("email").toString();
         friendService.acceptFriends(authUser,requestEmail);
         return ResponseEntity.status(200).body("친구 요청 승인이 완료되었습니다.");
     }
     @PostMapping("/reject")
-    public ResponseEntity<String> rejectFriends(@Auth AuthUser authUser, String requestEmail)
+    public ResponseEntity<String> rejectFriends(@Auth AuthUser authUser,HttpServletRequest request)
     {
+        String requestEmail = request.getAttribute("email").toString();
         friendService.rejectFriends(authUser,requestEmail);
         return ResponseEntity.status(200).body("친구 요청이 거절되었습니다.");
     }
