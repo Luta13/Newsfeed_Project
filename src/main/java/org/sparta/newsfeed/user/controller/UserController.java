@@ -43,8 +43,8 @@ public class UserController {
     }
 
     // 다른 사용자 프로필 조회
-    @GetMapping("/profile")
-    public ResponseEntity<String> getUserProfile(@RequestParam String email) {
+    @GetMapping("/profile/user")
+    public ResponseEntity<String> getUserProfile(@RequestParam("email") String email) {
         return ResponseEntity.ok("Profile");
     }
 
