@@ -38,9 +38,9 @@ public class UserService {
     }
 
     public String loginUser(UserLoginDto userLoginDto) {
-        User user = userRepository.findByEmail(userLoginDto.getEmail());
+        User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다."));
 
-        if (Objects.isNull(user) || !passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다.");
         }
 
