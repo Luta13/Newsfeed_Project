@@ -3,6 +3,7 @@ package org.sparta.newsfeed.friend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.friend.dto.FriendDto;
 import org.sparta.newsfeed.friend.dto.FriendResponseDto;
 import org.sparta.newsfeed.friend.entity.Friend;
 import org.sparta.newsfeed.friend.repository.FriendRepository;
@@ -25,9 +26,9 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final UserService userService;
 
-    public void requestFriends(AuthUser authUser, String requestEmail) {
+    public void requestFriends(AuthUser authUser, FriendDto friendDto) {
         User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(requestEmail);
+        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
 
         log.info("userEmail",user.getEmail());
         log.info("requestEmail",requestUser.getEmail());
@@ -41,13 +42,14 @@ public class FriendService {
 
 
 
+
         Friend friend = new Friend(user, requestUser, false);
         friendRepository.save(friend);
     }
 
-    public void cancelRequestFriends(AuthUser authUser, String requestEmail) {
+    public void cancelRequestFriends(AuthUser authUser, FriendDto friendDto) {
         User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(requestEmail);
+        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -58,9 +60,9 @@ public class FriendService {
         friendRepository.delete(friend);
     }
 
-    public void deleteFriends(AuthUser authUser, String requestEmail) {
+    public void deleteFriends(AuthUser authUser, FriendDto friendDtol) {
         User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(requestEmail);
+        User requestUser = userService.findUserByEmail(friendDtol.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -106,9 +108,9 @@ public class FriendService {
                 collect(Collectors.toList());
     }
 
-    public void acceptFriends(AuthUser authUser, String requestEmail) {
+    public void acceptFriends(AuthUser authUser, FriendDto friendDto) {
         User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(requestEmail);
+        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -125,9 +127,9 @@ public class FriendService {
 
     }
 
-    public void rejectFriends(AuthUser authUser, String requestEmail) {
+    public void rejectFriends(AuthUser authUser,FriendDto friendDto) {
         User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(requestEmail);
+        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
