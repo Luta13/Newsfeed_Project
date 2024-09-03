@@ -71,4 +71,6 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("없는 회원 정보입니다."));
         return new UserProfileDto(user.getEmail() , user.getName());
     }
+
+
 }

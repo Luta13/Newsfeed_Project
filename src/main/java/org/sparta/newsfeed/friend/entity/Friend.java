@@ -26,4 +26,11 @@ public class Friend extends Timestamped {
     @Column(nullable = false)
     private boolean applyYn;
 
+
+    public Friend(User baseId, User friendId, boolean applyYn){
+        this.baseId = baseId;
+        this.friendId = friendId;
+        this.applyYn = applyYn;
+    }
+
 }
