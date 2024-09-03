@@ -3,6 +3,7 @@ package org.sparta.newsfeed.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.user.dto.UserLoginDto;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,9 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser() {
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginDto userLoginDto) {
+//        userService.loginUser(userLoginDto);
+        userService.test();
         return ResponseEntity.ok("Login user");
     }
 
