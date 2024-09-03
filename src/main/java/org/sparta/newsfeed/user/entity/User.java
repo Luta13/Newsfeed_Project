@@ -16,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "user")
 public class User extends Timestamped {
@@ -51,4 +50,11 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
+    public User() {
+    }
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
+

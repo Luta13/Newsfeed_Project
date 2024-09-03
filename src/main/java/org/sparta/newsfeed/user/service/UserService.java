@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     // 사용자 등록
-    @Transactional
     public void registerUser(String email, String password) {
         // 비밀번호 정규식 검증
         if (!passwordEncoder.passwordVerification(password)) {
@@ -26,10 +26,8 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
 
         // 사용자 저장
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(encodedPassword);
-
+        User user = new User(email, encodedPassword);
+        userRepository.save(user);
         userRepository.save(user);
     }
 
