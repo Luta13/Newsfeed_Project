@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
 import org.sparta.newsfeed.user.dto.UserRegisterDto;
 import org.sparta.newsfeed.user.entity.User;
+import org.sparta.newsfeed.user.entity.UserStatusEnum;
 import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +25,15 @@ public class UserService {
         }
 
         // 비밀번호 정규식 검증
-        if (!passwordEncoder.passwordVerification(password)) {
+        if (!passwordEncoder.passwordVerification(userRegisterDto.getPassword())) {
             throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
         }
 
         // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
 
         // 사용자 저장
-        User user = new User(email, encodedPassword);
+        User user = new User(userRegisterDto.getEmail(), encodedPassword , userRegisterDto.getName() , "" , UserStatusEnum.ACTIVE);
         userRepository.save(user);
     }
 }

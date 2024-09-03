@@ -19,8 +19,9 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> registerUser() {
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Registered user"));
+    public ResponseEntity<ResponseDto<String>> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+        userService.registerUser(userRegisterDto);
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원가입이 완료되었습니다."));
     }
 
     // 회원탈퇴
@@ -33,7 +34,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto) {
 //        userService.loginUser(userLoginDto);
-        userService.test();
+//        userService.test();
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Login user"));
     }
 
