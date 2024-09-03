@@ -3,6 +3,7 @@ package org.sparta.newsfeed.user.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
+import org.sparta.newsfeed.user.dto.UserRegisterDto;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // 사용자 등록
-    public void registerUser(String email, String password) {
+    public void registerUser(UserRegisterDto userRegisterDto) {
+        // 중복된 이메일 확인
+        if (userRepository.findByEmail(userRegisterDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+        }
+
         // 비밀번호 정규식 검증
         if (!passwordEncoder.passwordVerification(password)) {
             throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
@@ -28,16 +34,5 @@ public class UserService {
         // 사용자 저장
         User user = new User(email, encodedPassword);
         userRepository.save(user);
-        userRepository.save(user);
     }
-
-    // 사용자 인증
-    public boolean authenticateUser(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 비밀번호 검증
-        return passwordEncoder.matches(rawPassword, user.getPassword());
-    }
-
 }

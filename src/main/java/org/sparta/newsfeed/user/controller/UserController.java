@@ -5,6 +5,7 @@ import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
+import org.sparta.newsfeed.user.dto.UserRegisterDto;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
