@@ -50,6 +50,12 @@ public class UserService {
         return jwtUtil.createToken(user.getUserId() , user.getEmail() , "ACCESS");
     }
 
+    public void logoutUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("조회 도중 에러가 발생했습니다."));
+        user.updateToken("");
+        userRepository.save(user);
+    }
+
     public UserProfileDto getProfile(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("조회 도중 에러가 발생했습니다."));
         return new UserProfileDto(user.getEmail() , user.getName());

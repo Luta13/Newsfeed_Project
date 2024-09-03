@@ -39,8 +39,9 @@ public class UserController {
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<String>> logoutUser() {
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Logout user"));
+    public ResponseEntity<ResponseDto<String>> logoutUser(@Auth AuthUser authUser) {
+        userService.logoutUser(authUser.getUserId());
+        return ResponseEntity.ok(new ResponseDto<>(204 , "" , "로그아웃했습니다."));
     }
 
     // 자신의 프로필 조회
