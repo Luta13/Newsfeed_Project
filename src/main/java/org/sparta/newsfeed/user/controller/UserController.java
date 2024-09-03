@@ -19,8 +19,9 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> registerUser() {
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Registered user"));
+    public ResponseEntity<ResponseDto<String>> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+        userService.registerUser(userRegisterDto);
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원가입 완료되었습니다."));
     }
 
     // 회원탈퇴
