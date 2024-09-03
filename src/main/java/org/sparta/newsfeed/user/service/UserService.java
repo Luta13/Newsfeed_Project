@@ -5,6 +5,7 @@ import org.sparta.newsfeed.common.config.PasswordEncoder;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
 import org.sparta.newsfeed.user.entity.User;
+import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +22,23 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public void test() {
-        String password = "test";
+    // 사용자 등록
+    @Transactional
+    public void registerUser(String email, String password) {
+        // 비밀번호 정규식 검증
+        if (!passwordEncoder.passwordVerification(password)) {
+            throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
+        }
 
         // 비밀번호 암호화
-        String encode = passwordEncoder.encode(password);
-        System.out.println(encode);
+        String encodedPassword = passwordEncoder.encode(password);
 
-        // 비밀번호가 일치하는지 검증
-        System.out.println(passwordEncoder.matches(password , encode));
+        // 사용자 저장
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
 
-        // 비밀번호 정규식 검증
-        if(passwordEncoder.passwordVerification(password)) {
-            System.out.println("Password verified");
-        }
+        userRepository.save(user);
     }
 
     public String loginUser(UserLoginDto userLoginDto) {
