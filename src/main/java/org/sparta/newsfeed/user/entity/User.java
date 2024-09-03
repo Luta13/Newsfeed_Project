@@ -50,7 +50,11 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
-    public User(String email, String password, String name , String refreshToken , UserStatusEnum status) {
+    public void updateToken(String token) {
+        this.refreshToken = token;
+    }
+
+    public User(String email, String password, String name, String refreshToken, UserStatusEnum status) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -58,4 +62,3 @@ public class User extends Timestamped {
         this.status = status;
     }
 }
-
