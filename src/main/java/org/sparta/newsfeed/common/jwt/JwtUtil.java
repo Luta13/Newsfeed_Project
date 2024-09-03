@@ -3,83 +3,96 @@ package org.sparta.newsfeed.common.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.logging.Logger;
+
 
 @Component
 public class JwtUtil {
-//    public static final String AUTHORIZATION_HEADER = "Authorization";
-//    public static final String AUTHORIZATION_PREFIX = "auth";
-//    public static final String BEARER_PREFIX = "Bearer ";
-//
-//    private final long TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L;
-//
-//    @Value("${jwt.secret.key}")
-//    private String secretKey;
-//    private Key key;
-//    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-//
-//    // 로그 설정
-//    public static final Logger logger = Logger.getLogger("JWT 관련 로그");
-//
-//    @PostConstruct
-//    public void init() {
-//        byte[] bytes = Base64.getDecoder().decode(secretKey);
-//        key = Keys.hmacShaKeyFor(bytes);
-//    }
-//
-//    // 토큰 생성
-//    public String createToken(String value) {
-//        Date date = new Date();
-//        return BEARER_PREFIX +
-//                Jwts.builder()
-//                    .setSubject(value) // 사용자 식별자값(ID)
-//                    .claim(AUTHORIZATION_HEADER, AUTHORIZATION_PREFIX)
-//                    .setExpiration(new Date(date.getTime() + TOKEN_EXPIRATION_TIME)) // 만료 시간
-//                    .setIssuedAt(date) // 발급일
-//                    .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-//                    .compact();
-//    }
-//
-//    // 토큰에서 사용자 정보 추출
-//    public String getUserInfoFromToken(String token) {
-//        Claims claims = parseClaims(token);
-//        return claims.getSubject(); // 토큰의 Subject에서 사용자 식별자값(ID)을 반환
-//    }
-//
-//    // 토큰 검증
-//    public boolean validateToken(String token) {
-//        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//            return true; // 유효한 토큰
-//        } catch (SecurityException | MalformedJwtException e) {
-//            logger.warning("잘못된 JWT 서명입니다.");
-//        } catch (ExpiredJwtException e) {
-//            logger.warning("만료된 JWT 토큰입니다.");
-//        } catch (UnsupportedJwtException e) {
-//            logger.warning("지원되지 않는 JWT 토큰입니다.");
-//        } catch (IllegalArgumentException e) {
-//            logger.warning("JWT 토큰이 잘못되었습니다.");
-//        }
-//        return false; // 유효하지 않은 토큰
-//    }
-//
-//    // 토큰에서 클레임 추출
-//    private Claims parseClaims(String token) {
-//        try {
-//            return Jwts.parserBuilder()
-//                    .setSigningKey(key)
-//                    .build()
-//                    .parseClaimsJws(token.replace(BEARER_PREFIX, ""))
-//                    .getBody();
-//        } catch (ExpiredJwtException e) {
-//            return e.getClaims(); // 토큰이 만료되었을 경우 클레임을 반환
-//        }
-//    }
+    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String BEARER_PREFIX = "Bearer ";
+
+    @Value("${jwt.secret.access.key}")
+    private String secretAccessKey;
+    private Key accessKey;
+
+    private final long TOKEN_ACCESS_TIME = 60 * 60 * 1000L;
+
+    @Value("${jwt.secret.refresh.key}")
+    private String secretRefreshKey;
+    private Key refreshKey;
+
+    private final long TOKEN_REFRESH_TIME = 60 * 60 * 5 * 1000L;
+
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+    // 로그 설정
+    public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
+
+    @PostConstruct
+    public void init() {
+        accessKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretAccessKey));
+        refreshKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretRefreshKey));
+    }
+
+    // 토큰 생성
+    public String createToken(String value , String type) {
+        Date date = new Date();
+
+        Key key = type.equals("ACCESS") ? accessKey : refreshKey;
+        long time = type.equals("ACCESS") ? TOKEN_ACCESS_TIME : TOKEN_REFRESH_TIME;
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                    .setSubject(value) // 사용자 식별자값(ID)
+                    .setExpiration(new Date(date.getTime() + time)) // 만료 시간
+                    .setIssuedAt(date) // 발급일
+                    .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                    .compact();
+    }
+
+    // 토큰 검증
+    public boolean validateToken(String token , String type) {
+        try {
+            Key key = type.equals("ACCESS") ? accessKey : refreshKey;
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true; // 유효한 토큰
+        } catch (SecurityException | MalformedJwtException e) {
+            logger.error("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            logger.error("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.error("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT 토큰이 잘못되었습니다.");
+        }
+        return false; // 유효하지 않은 토큰
+    }
+
+    // JWT 토큰 substring
+    public String substringToken(String tokenValue) {
+        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+            // "Bearer "이 공백을 포함하여 7자를 자른다.
+            return tokenValue.substring(7);
+        }
+        logger.error("Not Found Token");
+        throw new NullPointerException("Not Found Token");
+    }
+
+    // 토큰에서 사용자 정보 가져오기
+    public Claims getUserInfoFromToken(String token , String type) {
+        Key key = type.equals("ACCESS") ? accessKey : refreshKey;
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+
 }
 
 
