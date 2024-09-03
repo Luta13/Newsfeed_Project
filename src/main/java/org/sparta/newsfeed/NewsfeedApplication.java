@@ -19,6 +19,7 @@ public class NewsfeedApplication {
         System.setProperty("DB_NM", dotenv.get("DB_NM"));
         System.setProperty("DB_ID", dotenv.get("DB_ID"));
         System.setProperty("DB_PW", dotenv.get("DB_PW"));
+        System.setProperty("JWT_KEY", dotenv.get("JWT_KEY"));
 
         SpringApplication.run(NewsfeedApplication.class, args);
     }
