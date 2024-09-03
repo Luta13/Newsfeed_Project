@@ -6,6 +6,7 @@ import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
+import org.sparta.newsfeed.user.dto.UserProfileDto;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,15 +45,14 @@ public class UserController {
 
     // 자신의 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<ResponseDto<String>> getProfile(@Auth AuthUser authUser) {
-        System.out.println(authUser.getUserId() + " " + authUser.getEmail());
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Profile"));
+    public ResponseEntity<ResponseDto<UserProfileDto>> getProfile(@Auth AuthUser authUser) {
+        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getProfile(authUser.getUserId()) , "Profile"));
     }
 
     // 다른 사용자 프로필 조회
     @GetMapping("/profile/user")
-    public ResponseEntity<ResponseDto<String>> getUserProfile(@RequestParam("email") String email) {
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Profile"));
+    public ResponseEntity<ResponseDto<UserProfileDto>> getUserProfile(@RequestParam String email) {
+        return ResponseEntity.ok(new ResponseDto<>(200 , userService.getUserProfile(email) , "Profile"));
     }
 
     // 비밀번호 변경

@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
+import org.sparta.newsfeed.user.dto.UserProfileDto;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Transactional
 @RequiredArgsConstructor
@@ -50,5 +48,15 @@ public class UserService {
         userRepository.save(user);
 
         return jwtUtil.createToken(user.getUserId() , user.getEmail() , "ACCESS");
+    }
+
+    public UserProfileDto getProfile(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("조회 도중 에러가 발생했습니다."));
+        return new UserProfileDto(user.getEmail() , user.getName());
+    }
+
+    public UserProfileDto getUserProfile(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("없는 회원 정보입니다."));
+        return new UserProfileDto(user.getEmail() , user.getName());
     }
 }
