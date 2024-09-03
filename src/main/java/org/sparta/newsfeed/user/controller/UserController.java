@@ -3,6 +3,7 @@ package org.sparta.newsfeed.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.common.dto.ResponseDto;
 import org.sparta.newsfeed.user.dto.UserLoginDto;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -17,52 +18,52 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser() {
-        return ResponseEntity.ok("Registered user");
+    public ResponseEntity<ResponseDto<String>> registerUser() {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Registered user"));
     }
 
     // 회원탈퇴
     @DeleteMapping("/unregister")
-    public ResponseEntity<String> deleteAccount() {
-        return ResponseEntity.ok("Deleted user");
+    public ResponseEntity<ResponseDto<String>> deleteAccount() {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginDto userLoginDto) {
+    public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto) {
 //        userService.loginUser(userLoginDto);
         userService.test();
-        return ResponseEntity.ok("Login user");
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Login user"));
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser() {
-        return ResponseEntity.ok("Logout user");
+    public ResponseEntity<ResponseDto<String>> logoutUser() {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Logout user"));
     }
 
     // 자신의 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<String> getProfile(@Auth AuthUser authUser) {
+    public ResponseEntity<ResponseDto<String>> getProfile(@Auth AuthUser authUser) {
         System.out.println(authUser.getUserId() + " " + authUser.getEmail());
-        return ResponseEntity.ok("Profile");
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Profile"));
     }
 
     // 다른 사용자 프로필 조회
     @GetMapping("/profile/user")
-    public ResponseEntity<String> getUserProfile(@RequestParam("email") String email) {
-        return ResponseEntity.ok("Profile");
+    public ResponseEntity<ResponseDto<String>> getUserProfile(@RequestParam("email") String email) {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Profile"));
     }
 
     // 비밀번호 변경
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword() {
-        return ResponseEntity.ok("Change password");
+    public ResponseEntity<ResponseDto<String>> changePassword() {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Change password"));
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<String> updateProfile() {
-        return ResponseEntity.ok("Update profile");
+    public ResponseEntity<ResponseDto<String>> updateProfile() {
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Update profile"));
     }
 }
