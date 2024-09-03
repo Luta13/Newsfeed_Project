@@ -16,15 +16,14 @@ public class Friend extends Timestamped {
     private Long relationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "baseEmail", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "baseId", nullable = false)
     private User baseEmail;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friendEmail", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "friendId", nullable = false)
     private User friendEmail;
 
     @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private FriendApplyEnum applyYn;
+    private boolean applyYn;
 
 }
