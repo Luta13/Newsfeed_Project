@@ -29,8 +29,4 @@ public class BoardLike extends Timestamped {
         this.board = board;
     }
 
-//    public BoardLike(User user, Board board) {
-//        this.user = user;
-//        this.board = board;
-//    }
 }
