@@ -9,3 +9,4 @@ public class AuthUser {
     private Long userId;
     private String email;
 }
+

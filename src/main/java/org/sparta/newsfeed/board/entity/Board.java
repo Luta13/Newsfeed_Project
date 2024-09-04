@@ -8,6 +8,7 @@ import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,20 +33,49 @@ public class Board extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Comment> commentList = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<BoardLike> boardLikeList = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardLike> boardLikeList;
 
-    public Board(String title, String content, User user) {
+    @Column(updatable = false)
+    private LocalDateTime createDt = LocalDateTime.now();
+
+    private LocalDateTime modifyDt;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
         this.content = content;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
+//    public Board(String title, String content, User user) {
+//        this.title = title;
+//        this.content = content;
+//        this.user = user;
+//    }
+//
+//    public void update(String title, String content) {
+//        this.title = title;
+//        this.content = content;
+//    }
 }
