@@ -46,15 +46,15 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto updateComment(Long commentId, String content, AuthUser user) {
+    public CommentDto updateComment(Long commentId, String commentContent, AuthUser authUser) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
-        if (!comment.getUser().getUserId().equals(user.getUserId())) {
+        if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new IllegalArgumentException("작성자 본인만 댓글을 수정할 수 있습니다.");
         }
 
-        comment.setContent(content);
+        comment.setContent(commentContent);
         return convertToDto(commentRepository.save(comment));
     }
 

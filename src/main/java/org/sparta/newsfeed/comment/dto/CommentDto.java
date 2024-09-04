@@ -12,12 +12,17 @@ import java.time.LocalDateTime;
 public class CommentDto {
 
     private String commentContent;
-    private int commentLikeCount;
-    private String memberName;
-    private String boardTitle;
-    private String boardContent;
-    private LocalDateTime createDt;
-    private LocalDateTime modifyDt;
 
+    private int commentLikeCount;
+
+    private String memberName;
+
+    private String boardTitle;
+
+    private String boardContent;
+
+    private LocalDateTime createDt;
+
+    private LocalDateTime modifyDt;
 
 }
