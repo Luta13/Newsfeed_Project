@@ -3,13 +3,11 @@ package org.sparta.newsfeed.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.entity.BoardLike;
 import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.entity.CommentLike;
 import org.sparta.newsfeed.common.entity.Timestamped;
-import org.sparta.newsfeed.friend.entity.Friend;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,9 @@
 package org.sparta.newsfeed.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.sparta.newsfeed.board.dto.*;
-import org.sparta.newsfeed.board.entity.Board;
+import org.sparta.newsfeed.board.dto.BoardCreateRequestDto;
+import org.sparta.newsfeed.board.dto.BoardGetResponseDto;
+import org.sparta.newsfeed.board.dto.BoardUpdateRequestDto;
 import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
