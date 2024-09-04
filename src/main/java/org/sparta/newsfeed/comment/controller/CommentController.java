@@ -5,6 +5,7 @@ import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.service.CommentService;
 import org.sparta.newsfeed.comment.service.CommentLikeService;
 import org.sparta.newsfeed.common.annotation.Auth;
+import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
 import org.sparta.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
@@ -22,45 +23,52 @@ public class CommentController {
     private final CommentLikeService commentLikeService;
 
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<List<CommentDto>> getCommentsByBoard(@PathVariable Long boardId) {
-        return new ResponseEntity<>(commentService.getCommentsByBoard(boardId), HttpStatus.OK);
+    public ResponseEntity<ResponseDto<List<CommentDto>>> getCommentsByBoard(@PathVariable Long boardId) {
+        List<CommentDto> comments = commentService.getCommentsByBoard(boardId);
+        ResponseDto<List<CommentDto>> response = new ResponseDto<>(200, comments, "댓글 조회에 성공했습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<String>> createComment(@RequestBody CommentDto commentDto, @RequestParam Long boardId, @Auth User authUser) {
+    @PostMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<String>> createComment(@RequestBody CommentDto commentDto, @PathVariable Long boardId, @Auth AuthUser authUser) {
         commentService.createComment(commentDto, authUser, boardId);
-        return new ResponseEntity<>(new ResponseDto<>(200, "댓글이 작성되었습니다.", null), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(200, null, "댓글이 작성되었습니다."), HttpStatus.OK);
     }
 
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(
+    public ResponseEntity<ResponseDto<String>> updateComment(
             @PathVariable Long commentId,
-            @RequestParam String content,
-            @Auth User authUser
+            @RequestBody CommentDto commentDto,
+            @Auth AuthUser authUser
     ) {
-        return new ResponseEntity<>(commentService.updateComment(commentId, content, authUser), HttpStatus.OK);
+        commentService.updateComment(commentId, commentDto.getCommentContent(), authUser);
+        ResponseDto<String> response = new ResponseDto<>(200, null, "댓글이 수정되었습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId,
-            @Auth User authUser
+            @Auth AuthUser authUser
     ) {
         commentService.deleteComment(commentId, authUser);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{commentId}/like")
-    public ResponseEntity<Void> likeComment(@PathVariable Long commentId, @Auth User authUser) {
+    public ResponseEntity<ResponseDto<String>> likeComment(@PathVariable Long commentId, @Auth AuthUser authUser) {
         commentLikeService.likeComment(commentId, authUser);
-        return new ResponseEntity<>(HttpStatus.OK);
+        ResponseDto<String> response = new ResponseDto<>(200, null, "좋아요가 등록되었습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}/like-cancel")
-    public ResponseEntity<Void> unlikeComment(@PathVariable Long commentId, @Auth User authUser) {
+    public ResponseEntity<ResponseDto<String>> unlikeComment(@PathVariable Long commentId, @Auth AuthUser authUser) {
         commentLikeService.unlikeComment(commentId, authUser);
-        return new ResponseEntity<>(HttpStatus.OK);
+        ResponseDto<String> response = new ResponseDto<>(200, null, "좋아요가 취소되었습니다.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 }

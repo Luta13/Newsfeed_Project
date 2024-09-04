@@ -3,10 +3,13 @@ package org.sparta.newsfeed.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.entity.Comment;
+import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.comment.repository.CommentRepository;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.repository.BoardRepository;
+import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.user.entity.User;
+import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,30 +22,31 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
-    public CommentDto createComment(CommentDto commentDto, User user, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
-
+    public void createComment(CommentDto commentDto, AuthUser authUser, Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+        User user = userRepository.findById(authUser.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Comment comment = new Comment(null, commentDto.getCommentContent(), user, board, null);
-        Comment savedComment = commentRepository.save(comment);
-
-        return convertToDto(savedComment);
+        commentRepository.save(comment);
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByBoard(Long boardId) {
         boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
         List<Comment> comments = commentRepository.findByBoardId(boardId);
+
         return comments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentDto updateComment(Long commentId, String content, User user) {
+    public CommentDto updateComment(Long commentId, String content, AuthUser user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
@@ -55,7 +59,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId, User user) {
+    public void deleteComment(Long commentId, AuthUser user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
@@ -67,12 +71,13 @@ public class CommentService {
     }
 
     private CommentDto convertToDto(Comment comment) {
+
+        int commentLikeCount = commentLikeRepository.countByComment(comment);
+
         return new CommentDto(
-                comment.getCommentId(),
                 comment.getContent(),
-                comment.getUser().getUserId(),
+                commentLikeCount,
                 comment.getUser().getName(),
-                comment.getBoard().getBoardId(),
                 comment.getBoard().getTitle(),
                 comment.getBoard().getContent(),
                 comment.getCreatedAt(),

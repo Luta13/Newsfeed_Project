@@ -11,22 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
 
-    private Long commentId;
-
     private String commentContent;
-
-    private Long userId;
-
+    private int commentLikeCount;
     private String memberName;
-
-    private Long boardId;
-
     private String boardTitle;
-
     private String boardContent;
-
     private LocalDateTime createDt;
-
     private LocalDateTime modifyDt;
+
 
 }

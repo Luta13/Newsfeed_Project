@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
 

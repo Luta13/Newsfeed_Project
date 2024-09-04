@@ -15,4 +15,6 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
 
     @Query("SELECT cl FROM CommentLike cl WHERE cl.comment = :comment AND cl.user = :user")
     Optional<CommentLike> findByCommentAndUser(Comment comment, User user);
+
+    int countByComment(Comment comment);
 }
