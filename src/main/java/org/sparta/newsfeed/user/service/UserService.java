@@ -40,26 +40,32 @@ public class UserService {
         userRepository.save(user);
     }
 
-//    // 회원 탈퇴
-//    public UserUnregisterDto deleteAccount(UserUnregisterDto userUnregisterDto) {
-//        // 사용자 조회
-//        User user = userRepository.findByEmail(userUnregisterDto.getEmail())
-//                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-//
-//        // 비밀번호 확인
-//        if (!passwordEncoder.matches(userUnregisterDto.getPassword(), user.getPassword())) {
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-//        }
-//
-//        // 이미 탈퇴한 사용자 확인
-//        if (user.isDeleted()) {
-//            throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
-//        }
-//
-//        // 사용자 상태를 탈퇴 상태로 변경
-//        user.markAsDeleted(); // 사용자 엔티티의 상태를 변경하는 메서드 호출
-//        userRepository.save(user);
-//    }
+    // 회원 탈퇴
+    public void deleteAccount(AuthUser authUser, UserUnregisterDto userUnregisterDto) {
+        // 사용자 조회
+        User user = userRepository.findById(authUser.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (!user.getEmail().equals(authUser.getEmail())) {
+            throw new IllegalArgumentException("이메일이 일치하지 않습니다.");
+        }
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(userUnregisterDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 이미 탈퇴한 사용자 확인
+        if (user.getStatus() == UserStatusEnum.REMOVE) {
+            throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
+        }
+
+        // 사용자 상태를 탈퇴 상태로 변경
+        user.updateStatus(UserStatusEnum.REMOVE);
+        userRepository.save(user);
+
+        // Todo : friend repository가 완성되면 추후 작성
+    }
 
     // 비밀번호 변경
     public void changePassword(AuthUser authUser, UserPasswordUpdateDto userPasswordUpdateDto) {

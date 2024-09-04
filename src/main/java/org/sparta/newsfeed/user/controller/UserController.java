@@ -24,12 +24,12 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원가입 완료되었습니다."));
     }
 
-//    // 회원탈퇴
-//    @DeleteMapping("/unregister")
-//    public ResponseEntity<ResponseDto<String>> deleteAccount(@RequestParam String email, @RequestParam String password) {
-//        userService.deleteAccount(email, password);
-//        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
-//    }
+    // 회원탈퇴
+    @DeleteMapping("/unregister")
+    public ResponseEntity<ResponseDto<String>> deleteAccount(@Auth AuthUser authUser, @RequestBody UserUnregisterDto userUnregisterDto) {
+        userService.deleteAccount(authUser, userUnregisterDto);
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
+    }
 
     // 로그인
     @PostMapping("/login")
