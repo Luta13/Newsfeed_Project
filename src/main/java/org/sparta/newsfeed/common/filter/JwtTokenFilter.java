@@ -60,6 +60,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean validateNotPublicUrl(String url) {
-        return !(url.equals("/users/register") || url.equals("/users/login"));
+        return !(url.equals("/users/register") || url.equals("/users/login") || url.equals("/users/refresh-token"));
     }
 }

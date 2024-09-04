@@ -72,8 +72,9 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "프로필이 수정되었습니다."));
     }
 
+    // TODO 보류!
     // 토큰 재발급
-    @PostMapping("/users/refresh-token")
+    @PostMapping("/refresh-token")
     public ResponseEntity<ResponseDto<String>> refreshToken(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
         response.addHeader(HttpHeaders.AUTHORIZATION, userService.refreshToken(userLoginDto));
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "토큰 재발급 되었습니다."));
