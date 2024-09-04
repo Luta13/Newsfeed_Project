@@ -63,7 +63,17 @@ public class User extends Timestamped {
     }
 
     // 비밀번호 변경
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
+    public void changePassword(String changePassword) {
+        this.password = changePassword;
+    }
+
+    // 이름 변경
+    public void updateName(String updateName) {
+        this.name = updateName;
+    }
+
+    // 이메일 변경
+    public void updateEmail(String updateEmail) {
+        this.email = updateEmail;
     }
 }

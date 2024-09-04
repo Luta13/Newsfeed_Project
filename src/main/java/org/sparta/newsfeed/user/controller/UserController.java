@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
-import org.sparta.newsfeed.user.dto.UserLoginDto;
-import org.sparta.newsfeed.user.dto.UserProfileDto;
-import org.sparta.newsfeed.user.dto.UserRegisterDto;
+import org.sparta.newsfeed.user.dto.*;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,13 +58,20 @@ public class UserController {
 
     // 비밀번호 변경
     @PostMapping("/change-password")
-    public ResponseEntity<ResponseDto<String>> changePassword() {
+    public ResponseEntity<ResponseDto<String>> changePassword(@RequestBody UserPasswordUpdateDto userPasswordUpdateDto, @Auth AuthUser authUser) {
+        UserPasswordUpdateDto updatePasswordDto = new UserPasswordUpdateDto(
+                authUser.getEmail(),
+                userPasswordUpdateDto.getOriginalPassword(),
+                userPasswordUpdateDto.getChangePassword()
+        );
+        userService.changePassword(updatePasswordDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Change password"));
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<ResponseDto<String>> updateProfile() {
+    public ResponseEntity<ResponseDto<String>> updateProfile(@RequestBody UserProfileUpdateDto userProfileUpdateDto, @Auth AuthUser authUser) {
+        userService.updateUserProfile(new UserProfileUpdateDto(authUser.getEmail(), userProfileUpdateDto.getName(), userProfileUpdateDto.getUpdateEmail()));
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Update profile"));
     }
 }
