@@ -74,6 +74,7 @@ public class User extends Timestamped {
         this.name = updateName;
     }
 
+    // 상태 변경
     public void updateStatus(UserStatusEnum updateStatus) {
         this.status = updateStatus;
     }

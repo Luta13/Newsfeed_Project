@@ -7,6 +7,7 @@ import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
 import org.sparta.newsfeed.user.dto.*;
 import org.sparta.newsfeed.user.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +29,13 @@ public class UserController {
     @DeleteMapping("/unregister")
     public ResponseEntity<ResponseDto<String>> deleteAccount(@Auth AuthUser authUser, @RequestBody UserUnregisterDto userUnregisterDto) {
         userService.deleteAccount(authUser, userUnregisterDto);
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원탈퇴가 완료되었습니다."));
     }
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto , HttpServletResponse response) {
-        response.addHeader("Authorization", userService.loginUser(userLoginDto));
+        response.addHeader(HttpHeaders.AUTHORIZATION, userService.loginUser(userLoginDto));
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "로그인에 성공했습니다."));
     }
 
@@ -61,13 +62,20 @@ public class UserController {
     @PostMapping("/change-password")
     public ResponseEntity<ResponseDto<String>> changePassword(@Auth AuthUser authUser, @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {
         userService.changePassword(authUser, userPasswordUpdateDto);
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Change password"));
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "비밀번호가 변경되었습니다."));
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<ResponseDto<String>> updateProfile(@Auth AuthUser authUser, @RequestBody UserProfileUpdateDto userProfileUpdateDto) {
         userService.updateUserProfile(authUser, userProfileUpdateDto);
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Update profile"));
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "프로필이 수정되었습니다."));
+    }
+
+    // 토큰 재발급
+    @PostMapping("/users/refresh-token")
+    public ResponseEntity<ResponseDto<String>> refreshToken(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
+        response.addHeader(HttpHeaders.AUTHORIZATION, userService.refreshToken(userLoginDto));
+        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "토큰 재발급 되었습니다."));
     }
 }
