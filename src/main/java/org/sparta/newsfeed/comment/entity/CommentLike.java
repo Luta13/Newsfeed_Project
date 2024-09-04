@@ -1,12 +1,17 @@
 package org.sparta.newsfeed.comment.entity;
 
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
 
-@Table(name = "comment_like")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Table(name = "comment_like")
 public class CommentLike extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +24,5 @@ public class CommentLike extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
-
 
 }
