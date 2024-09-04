@@ -7,9 +7,6 @@ import lombok.Setter;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.user.entity.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor

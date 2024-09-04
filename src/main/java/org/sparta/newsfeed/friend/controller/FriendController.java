@@ -1,8 +1,7 @@
 package org.sparta.newsfeed.friend.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.friend.dto.FriendDto;
@@ -30,7 +29,7 @@ public class FriendController {
     public ResponseEntity<String> cancelRequestFriends(@Auth AuthUser authUser,@RequestBody FriendDto friendDto)
     {
         friendService.cancelRequestFriends(authUser,friendDto);
-        return ResponseEntity.status(204).body("친구추가 요청이 반려되엇습니다");
+        return ResponseEntity.status(200).body("친구추가 요청이 반려되엇습니다");
     }
 
     @PostMapping("/remove")
@@ -48,7 +47,8 @@ public class FriendController {
     @GetMapping
     public ResponseEntity<List<FriendResponseDto>> getFriends(@Auth AuthUser authUser)
     {
-        return ResponseEntity.status(200).body(friendService.getFriends(authUser));
+        List<FriendResponseDto> friendReponseDtolist= friendService.getFriends(authUser);
+        return ResponseEntity.status(200).body(friendReponseDtolist);
     }
 
     @PostMapping("/accept")
