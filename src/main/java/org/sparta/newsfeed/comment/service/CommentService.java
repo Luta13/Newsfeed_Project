@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.entity.CommentLike;
-import org.sparta.newsfeed.comment.repositroy.CommentRepository;
-import org.sparta.newsfeed.comment.repositroy.CommentLikeRepository;
+import org.sparta.newsfeed.comment.repository.CommentRepository;
+import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.repository.BoardRepository;
 import org.sparta.newsfeed.user.entity.User;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final CommentLikeRepository commentLikeRepository; // 추가된 리포지토리
+    private final CommentLikeRepository commentLikeRepository;
     private final BoardRepository boardRepository;
 
     public CommentDto createComment(CommentDto commentDto, User user, Long boardId) {
@@ -29,7 +29,7 @@ public class CommentService {
         Comment comment = new Comment(null, commentDto.getContent(), user, board, null);
         Comment savedComment = commentRepository.save(comment);
 
-        CommentLike commentLike = new CommentLike(savedComment, user, 0);
+        CommentLike commentLike = new CommentLike(null, user, savedComment);
         commentLikeRepository.save(commentLike);
 
         return convertToDto(savedComment);
@@ -82,4 +82,5 @@ public class CommentService {
                 comment.getBoard().getBoardId()
         );
     }
+
 }
