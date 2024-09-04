@@ -10,6 +10,7 @@ import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.repository.BoardRepository;
 import org.sparta.newsfeed.user.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final BoardRepository boardRepository;
 
+    @Transactional
     public CommentDto createComment(CommentDto commentDto, User user, Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
@@ -45,6 +47,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public CommentDto updateComment(Long commentId, String content, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
@@ -60,6 +63,7 @@ public class CommentService {
         return convertToDto(commentRepository.save(comment));
     }
 
+    @Transactional
     public void deleteComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
