@@ -36,12 +36,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (Strings.isNotBlank(tokenValue)) { // 토큰이 존재하면 검증 시작
                 // 토큰 검증
                 String token = jwtUtil.substringToken(tokenValue);
-                if (!jwtUtil.validateToken(token , "ACCESS")) {
+
+                String type = "ACCESS";
+                if (validateRefreshTokenUrl(url)) {
+                    type = "REFRESH";
+                }
+
+                if (!jwtUtil.validateToken(token , type)) {
                     log.error("인증 실패");
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "인증에 실패했습니다.");
                 } else {
                     log.info("토큰 검증 성공");
-                    Claims claims = jwtUtil.getUserInfoFromToken(token , "ACCESS");
+                    Claims claims = jwtUtil.getUserInfoFromToken(token , type);
 
                     HttpServletRequest httpRequest = (HttpServletRequest) request;
 
@@ -60,6 +66,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean validateNotPublicUrl(String url) {
-        return !(url.equals("/users/register") || url.equals("/users/login") || url.equals("/users/refresh-token"));
+        return !(url.equals("/users/register") || url.equals("/users/login"));
+    }
+
+    private boolean validateRefreshTokenUrl(String url) {
+        return url.equals("/users/refresh-token");
     }
 }

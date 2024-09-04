@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -35,15 +37,10 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto , HttpServletResponse response) {
-        response.addHeader(HttpHeaders.AUTHORIZATION, userService.loginUser(userLoginDto));
+        List<String> tokens =  userService.loginUser(userLoginDto);
+        response.addHeader("ACCESS_TOKEN", tokens.get(0));
+        response.addHeader("REFRESH_TOKEN", tokens.get(1));
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "로그인에 성공했습니다."));
-    }
-
-    // 로그아웃
-    @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<String>> logoutUser(@Auth AuthUser authUser) {
-        userService.logoutUser(authUser.getUserId());
-        return ResponseEntity.ok(new ResponseDto<>(204 , "" , "로그아웃했습니다."));
     }
 
     // 자신의 프로필 조회
@@ -72,11 +69,10 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "프로필이 수정되었습니다."));
     }
 
-    // TODO 보류!
     // 토큰 재발급
     @PostMapping("/refresh-token")
-    public ResponseEntity<ResponseDto<String>> refreshToken(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
-        response.addHeader(HttpHeaders.AUTHORIZATION, userService.refreshToken(userLoginDto));
+    public ResponseEntity<ResponseDto<String>> refreshToken(@Auth AuthUser authUser, HttpServletResponse response) {
+        response.addHeader(HttpHeaders.AUTHORIZATION, userService.refreshToken(authUser));
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "토큰 재발급 되었습니다."));
     }
 }

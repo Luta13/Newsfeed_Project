@@ -33,8 +33,6 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    private String refreshToken;
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
@@ -51,15 +49,10 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
-    public void updateToken(String token) {
-        this.refreshToken = token;
-    }
-
-    public User(String email, String password, String name, String refreshToken, UserStatusEnum status) {
+    public User(String email, String password, String name, UserStatusEnum status) {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.refreshToken = refreshToken;
         this.status = status;
     }
 
