@@ -12,4 +12,5 @@ public class BoardRequestDto {
     private BoardSortEnum sort;
     private String startDt;
     private String endDt;
+
 }

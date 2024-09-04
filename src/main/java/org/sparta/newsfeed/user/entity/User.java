@@ -15,7 +15,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import java.util.ArrayList;
 import java.util.List;
 
-@EnableJpaAuditing
 @Entity
 @Getter
 @NoArgsConstructor
@@ -65,7 +64,17 @@ public class User extends Timestamped {
     }
 
     // 비밀번호 변경
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
+    public void changePassword(String changePassword) {
+        this.password = changePassword;
+    }
+
+    // 이름 변경
+    public void updateName(String updateName) {
+        this.name = updateName;
+    }
+
+    // 상태 변경
+    public void updateStatus(UserStatusEnum updateStatus) {
+        this.status = updateStatus;
     }
 }
