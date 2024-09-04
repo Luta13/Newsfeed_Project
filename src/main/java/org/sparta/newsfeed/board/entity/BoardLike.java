@@ -24,12 +24,9 @@ public class BoardLike extends Timestamped {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public void setUser(User user) {
+    public BoardLike(User user, Board board) {
         this.user = user;
+        this.board = board;
     }
 
 //    public BoardLike(User user, Board board) {
