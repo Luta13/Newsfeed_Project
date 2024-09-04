@@ -23,8 +23,8 @@ public class FriendService {
     private final UserService userService;
 
     public void requestFriends(AuthUser authUser, FriendDto friendDto) {
-        User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
+        User user = userService.findByEmail(authUser.getEmail());
+        User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
 
 
@@ -54,8 +54,8 @@ public class FriendService {
     }
 
     public void cancelRequestFriends(AuthUser authUser, FriendDto friendDto) {
-        User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
+        User user = userService.findByEmail(authUser.getEmail());
+        User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -71,8 +71,8 @@ public class FriendService {
     }
 
     public void deleteFriends(AuthUser authUser, FriendDto friendDto) {
-        User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
+        User user = userService.findByEmail(authUser.getEmail());
+        User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -95,7 +95,7 @@ public class FriendService {
 
     public List<FriendResponseDto> getFriends(AuthUser authUser) {
         List<Friend> baseFriends;
-        User user = userService.findUserByEmail(authUser.getEmail());
+        User user = userService.findByEmail(authUser.getEmail());
         baseFriends = friendRepository.findByFriendIdAndApplyYnTrue(user);
 
 
@@ -107,7 +107,7 @@ public class FriendService {
 
     public List<FriendResponseDto> getRequestFriends(AuthUser authUser) {
         List<Friend> requestFriends;
-        User user = userService.findUserByEmail(authUser.getEmail());
+        User user = userService.findByEmail(authUser.getEmail());
         requestFriends = friendRepository.findByFriendIdAndApplyYnFalse(user);
 
 
@@ -116,8 +116,8 @@ public class FriendService {
     }
 
     public void acceptFriends(AuthUser authUser, FriendDto friendDto) {
-        User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
+        User user = userService.findByEmail(authUser.getEmail());
+        User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");
@@ -136,8 +136,8 @@ public class FriendService {
     }
 
     public void rejectFriends(AuthUser authUser,FriendDto friendDto) {
-        User user = userService.findUserByEmail(authUser.getEmail());
-        User requestUser = userService.findUserByEmail(friendDto.getRequestEmail());
+        User user = userService.findByEmail(authUser.getEmail());
+        User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
         if (user == null || requestUser == null) {
             throw new IllegalArgumentException("유저를 찾지 못했습니다.");

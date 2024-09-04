@@ -49,8 +49,7 @@ public class UserService {
     // 회원 탈퇴
     public void deleteAccount(AuthUser authUser, UserUnregisterDto userUnregisterDto) {
         // 사용자 조회
-        User user = userRepository.findById(authUser.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByIdOrElseThrow(authUser.getUserId());
 
         if (!user.getEmail().equals(authUser.getEmail())) {
             throw new IllegalArgumentException("이메일이 일치하지 않습니다.");
@@ -76,8 +75,7 @@ public class UserService {
     // 비밀번호 변경
     public void changePassword(AuthUser authUser, UserPasswordUpdateDto userPasswordUpdateDto) {
         // 사용자 조회
-        User user = userRepository.findById(authUser.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByIdOrElseThrow(authUser.getUserId());
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(userPasswordUpdateDto.getOriginalPassword(), user.getPassword())) {
@@ -103,8 +101,7 @@ public class UserService {
     // 프로필 수정
     public void updateUserProfile(AuthUser authUser, UserProfileUpdateDto userProfileUpdateDto) {
         // 사용자 조회
-        User user = userRepository.findById(authUser.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByIdOrElseThrow(authUser.getUserId());
 
         // 이름 수정
         user.updateName(userProfileUpdateDto.getName());
@@ -128,24 +125,25 @@ public class UserService {
     }
 
     public UserProfileDto getProfile(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("조회 도중 에러가 발생했습니다."));
+        User user = userRepository.findByIdOrElseThrow(userId);
         return new UserProfileDto(user.getEmail(), user.getName());
     }
 
     public UserProfileDto getUserProfile(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("없는 회원 정보입니다."));
+        User user = userRepository.findByEmailOrElseThrow(email);
         return new UserProfileDto(user.getEmail(), user.getName());
     }
 
-    public User findUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        return user;
+    public User findByEmail(String email) {
+        return userRepository.findByEmailOrElseThrow(email);
+    }
+
+    public User findById(Long userId) {
+        return userRepository.findByIdOrElseThrow(userId);
     }
 
     public String refreshToken(AuthUser authUser) {
-        User user = userRepository.findById(authUser.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("없는 사용자입니다."));
-
+        User user = userRepository.findByIdOrElseThrow(authUser.getUserId());
         return jwtUtil.createToken(user.getUserId(), user.getEmail(), "ACCESS");
     }
 }

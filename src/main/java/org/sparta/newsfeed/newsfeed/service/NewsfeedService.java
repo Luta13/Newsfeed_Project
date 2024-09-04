@@ -7,7 +7,7 @@ import org.sparta.newsfeed.newsfeed.dto.NewsfeedRequestDto;
 import org.sparta.newsfeed.newsfeed.dto.NewsfeedResponseDto;
 import org.sparta.newsfeed.newsfeed.repository.NewsfeedRepository;
 import org.sparta.newsfeed.user.entity.User;
-import org.sparta.newsfeed.user.repository.UserRepository;
+import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,11 +22,10 @@ import java.util.List;
 public class NewsfeedService {
 
     private final NewsfeedRepository newsfeedRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public Page<NewsfeedResponseDto> getNewsfeed(Long userId , NewsfeedRequestDto newsfeedRequestDto) {
-        // TODO : userRepository 가 아니라 userService 에 findById로 변경 예정
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userService.findById(userId);
 
         List<Friend> users = newsfeedRepository.findByBaseIdAndApplyYnTrue(user);
         List<Long> userIds = new ArrayList<>();

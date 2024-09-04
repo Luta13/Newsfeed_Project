@@ -1,15 +1,15 @@
 package org.sparta.newsfeed.comment.service;
 
 import lombok.RequiredArgsConstructor;
+import org.sparta.newsfeed.board.entity.Board;
+import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.comment.repository.CommentRepository;
-import org.sparta.newsfeed.board.entity.Board;
-import org.sparta.newsfeed.board.repository.BoardRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.user.entity.User;
-import org.sparta.newsfeed.user.repository.UserRepository;
+import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,25 +18,24 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
+    private final BoardService boardService;
+    private final UserService userService;
     private final CommentLikeRepository commentLikeRepository;
 
-    @Transactional
     public void createComment(CommentDto commentDto, AuthUser authUser, Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
-        User user = userRepository.findById(authUser.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Board board = boardService.findById(boardId);
+        User user = userService.findById(authUser.getUserId());
         Comment comment = new Comment(null, commentDto.getCommentContent(), user, board, null);
         commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByBoard(Long boardId) {
-        boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+        boardService.findById(boardId);
 
         List<Comment> comments = commentRepository.findByBoardId(boardId);
 
@@ -45,10 +44,8 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public CommentDto updateComment(Long commentId, String commentContent, AuthUser authUser) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new IllegalArgumentException("작성자 본인만 댓글을 수정할 수 있습니다.");
@@ -58,10 +55,8 @@ public class CommentService {
         return convertToDto(commentRepository.save(comment));
     }
 
-    @Transactional
     public void deleteComment(Long commentId, AuthUser user) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         if (!comment.getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalArgumentException("작성자 본인만 댓글을 삭제할 수 있습니다.");

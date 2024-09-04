@@ -5,6 +5,7 @@ import org.sparta.newsfeed.board.dto.BoardCreateRequestDto;
 import org.sparta.newsfeed.board.dto.BoardGetResponseDto;
 import org.sparta.newsfeed.board.dto.BoardRequestDto;
 import org.sparta.newsfeed.board.dto.BoardUpdateRequestDto;
+import org.sparta.newsfeed.board.service.BoardLikeService;
 import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardLikeService boardLikeService;
 
     //게시물 작성
     @PostMapping
@@ -46,13 +48,13 @@ public class BoardController {
     //게시물 좋아요
     @PostMapping("/{boardId}/like")
     public ResponseEntity<ResponseDto<String>> likeBoard(@Auth AuthUser authUser , @PathVariable Long boardId) {
-        boardService.likeBoard(authUser , boardId);
+        boardLikeService.likeBoard(authUser , boardId);
         return ResponseEntity.ok(new ResponseDto<>(200, "",  "좋아요가 등록되었습니다."));
     }
     //게시물 좋아요 취소
     @PostMapping("/{boardId}/like-cancel")
     public ResponseEntity<ResponseDto<String>> unlikeBoard(@Auth AuthUser authUser , @PathVariable Long boardId) {
-        boardService.unlikeBoard(authUser , boardId);
+        boardLikeService.unlikeBoard(authUser , boardId);
         return ResponseEntity.ok(new ResponseDto<>(200, "",  "좋아요가 삭제되었습니다."));
     }
 }
