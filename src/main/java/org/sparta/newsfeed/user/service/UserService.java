@@ -2,6 +2,7 @@ package org.sparta.newsfeed.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
+import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.user.dto.*;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
 import org.sparta.newsfeed.user.entity.User;
@@ -39,10 +40,31 @@ public class UserService {
         userRepository.save(user);
     }
 
+//    // 회원 탈퇴
+//    public UserUnregisterDto deleteAccount(UserUnregisterDto userUnregisterDto) {
+//        // 사용자 조회
+//        User user = userRepository.findByEmail(userUnregisterDto.getEmail())
+//                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+//
+//        // 비밀번호 확인
+//        if (!passwordEncoder.matches(userUnregisterDto.getPassword(), user.getPassword())) {
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//
+//        // 이미 탈퇴한 사용자 확인
+//        if (user.isDeleted()) {
+//            throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
+//        }
+//
+//        // 사용자 상태를 탈퇴 상태로 변경
+//        user.markAsDeleted(); // 사용자 엔티티의 상태를 변경하는 메서드 호출
+//        userRepository.save(user);
+//    }
+
     // 비밀번호 변경
-    public void changePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
+    public void changePassword(AuthUser authUser, UserPasswordUpdateDto userPasswordUpdateDto) {
         // 사용자 조회
-        User user = userRepository.findByEmail(userPasswordUpdateDto.getEmail())
+        User user = userRepository.findById(authUser.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 현재 비밀번호 확인
@@ -67,22 +89,13 @@ public class UserService {
     }
 
     // 프로필 수정
-    public void updateUserProfile(UserProfileUpdateDto userProfileUpdateDto) {
+    public void updateUserProfile(AuthUser authUser, UserProfileUpdateDto userProfileUpdateDto) {
         // 사용자 조회
-        User user = userRepository.findByEmail(userProfileUpdateDto.getEmail())
+        User user = userRepository.findById(authUser.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 이름과 이메일 업데이트
-        if (userProfileUpdateDto.getName() != null && !userProfileUpdateDto.getName().trim().isEmpty()) {
-            user.updateName(userProfileUpdateDto.getName());
-        }
-
-        if (userProfileUpdateDto.getUpdateEmail() != null && !userProfileUpdateDto.getUpdateEmail().trim().isEmpty()) {
-            if (userRepository.findByEmail(userProfileUpdateDto.getUpdateEmail()).isPresent()) {
-                throw new IllegalArgumentException("이미 등록된 이메일입니다.");
-            }
-            user.updateEmail(userProfileUpdateDto.getUpdateEmail());
-        }
+        // 이름 수정
+        user.updateName(userProfileUpdateDto.getName());
 
         // 사용자 정보 저장
         userRepository.save(user);

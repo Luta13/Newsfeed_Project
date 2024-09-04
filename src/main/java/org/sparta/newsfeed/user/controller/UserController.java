@@ -24,11 +24,12 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원가입 완료되었습니다."));
     }
 
-    // 회원탈퇴
-    @DeleteMapping("/unregister")
-    public ResponseEntity<ResponseDto<String>> deleteAccount() {
-        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
-    }
+//    // 회원탈퇴
+//    @DeleteMapping("/unregister")
+//    public ResponseEntity<ResponseDto<String>> deleteAccount(@RequestParam String email, @RequestParam String password) {
+//        userService.deleteAccount(email, password);
+//        return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Deleted user"));
+//    }
 
     // 로그인
     @PostMapping("/login")
@@ -58,20 +59,15 @@ public class UserController {
 
     // 비밀번호 변경
     @PostMapping("/change-password")
-    public ResponseEntity<ResponseDto<String>> changePassword(@RequestBody UserPasswordUpdateDto userPasswordUpdateDto, @Auth AuthUser authUser) {
-        UserPasswordUpdateDto updatePasswordDto = new UserPasswordUpdateDto(
-                authUser.getEmail(),
-                userPasswordUpdateDto.getOriginalPassword(),
-                userPasswordUpdateDto.getChangePassword()
-        );
-        userService.changePassword(updatePasswordDto);
+    public ResponseEntity<ResponseDto<String>> changePassword(@Auth AuthUser authUser, @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {
+        userService.changePassword(authUser, userPasswordUpdateDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Change password"));
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<ResponseDto<String>> updateProfile(@RequestBody UserProfileUpdateDto userProfileUpdateDto, @Auth AuthUser authUser) {
-        userService.updateUserProfile(new UserProfileUpdateDto(authUser.getEmail(), userProfileUpdateDto.getName(), userProfileUpdateDto.getUpdateEmail()));
+    public ResponseEntity<ResponseDto<String>> updateProfile(@Auth AuthUser authUser, @RequestBody UserProfileUpdateDto userProfileUpdateDto) {
+        userService.updateUserProfile(authUser, userProfileUpdateDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "Update profile"));
     }
 }

@@ -73,9 +73,4 @@ public class User extends Timestamped {
     public void updateName(String updateName) {
         this.name = updateName;
     }
-
-    // 이메일 변경
-    public void updateEmail(String updateEmail) {
-        this.email = updateEmail;
-    }
 }
