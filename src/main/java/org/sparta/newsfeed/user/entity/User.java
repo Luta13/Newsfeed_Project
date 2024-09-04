@@ -10,12 +10,10 @@ import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.entity.CommentLike;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.friend.entity.Friend;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EnableJpaAuditing
 @Entity
 @Getter
 @NoArgsConstructor
@@ -62,10 +60,5 @@ public class User extends Timestamped {
         this.name = name;
         this.refreshToken = refreshToken;
         this.status = status;
-    }
-
-    // 비밀번호 변경
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
     }
 }
