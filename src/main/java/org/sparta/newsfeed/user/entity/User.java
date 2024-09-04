@@ -3,6 +3,7 @@ package org.sparta.newsfeed.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.entity.BoardLike;
 import org.sparta.newsfeed.comment.entity.Comment;
@@ -43,16 +44,21 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "baseEmail")
-    private List<Friend> baseList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "friendEmail")
-    private List<Friend> friendList = new ArrayList<>();
-
     @OneToMany(mappedBy = "user")
     private List<BoardLike> boardLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
+    public void updateToken(String token) {
+        this.refreshToken = token;
+    }
+
+    public User(String email, String password, String name, String refreshToken, UserStatusEnum status) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.refreshToken = refreshToken;
+        this.status = status;
+    }
 }
