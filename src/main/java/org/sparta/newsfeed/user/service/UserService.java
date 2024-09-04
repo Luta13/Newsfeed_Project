@@ -11,7 +11,6 @@ import org.sparta.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Transactional
 @RequiredArgsConstructor
@@ -140,36 +139,25 @@ public class UserService {
         return new UserProfileDto(user.getEmail() , user.getName());
     }
 
-    // 비밀번호 변경
-    public void changePassword(String email, String currentPassword, String newPassword) {
-        // 사용자 조회
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        // 새로운 비밀번호가 현재 비밀번호와 동일한지 확인
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("새로운 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
-        }
-
-        // 새로운 비밀번호 형식 검증
-        if (!passwordEncoder.passwordVerification(newPassword)) {
-            throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
-        }
-
-        // 새로운 비밀번호 암호화 및 저장
-        String encodedNewPassword = passwordEncoder.encode(newPassword);
-        user.changePassword(encodedNewPassword);
-        userRepository.save(user);
-    }
-
-    public User findUserByEmail(String email)
-    {
+    public User findUserByEmail(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         return user;
     }
+
+    public String refreshToken(UserLoginDto userLoginDto) {
+        User user = userRepository.findByEmail(userLoginDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다."));
+
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다.");
+        }
+
+        // refresh token
+        String refresh = jwtUtil.createToken(user.getUserId() , user.getEmail() , "REFRESH");
+        user.updateToken(refresh);
+        userRepository.save(user);
+
+        return jwtUtil.createToken(user.getUserId() , user.getEmail() , "ACCESS");
+    }
+
 }
