@@ -3,6 +3,7 @@ package org.sparta.newsfeed.user.service;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.friend.repository.FriendRepository;
 import org.sparta.newsfeed.user.dto.*;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
 import org.sparta.newsfeed.user.entity.User;
@@ -20,6 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final FriendRepository friendRepository;
 
     // 사용자 등록
     public void registerUser(UserRegisterDto userRegisterDto) {
@@ -61,11 +63,11 @@ public class UserService {
             throw new IllegalArgumentException("이미 탈퇴한 사용자입니다.");
         }
 
+        friendRepository.deleteByBaseIdOrFriendId(user, user);
+
         // 사용자 상태를 탈퇴 상태로 변경
         user.updateStatus(UserStatusEnum.REMOVE);
         userRepository.save(user);
-
-        // Todo : friend repository가 완성되면 추후 작성
     }
 
     // 비밀번호 변경
