@@ -2,10 +2,8 @@ package org.sparta.newsfeed.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.config.PasswordEncoder;
-import org.sparta.newsfeed.user.dto.UserRegisterDto;
+import org.sparta.newsfeed.user.dto.*;
 import org.sparta.newsfeed.common.jwt.JwtUtil;
-import org.sparta.newsfeed.user.dto.UserLoginDto;
-import org.sparta.newsfeed.user.dto.UserProfileDto;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.entity.UserStatusEnum;
 import org.sparta.newsfeed.user.repository.UserRepository;
@@ -41,6 +39,55 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 비밀번호 변경
+    public void changePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
+        // 사용자 조회
+        User user = userRepository.findByEmail(userPasswordUpdateDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(userPasswordUpdateDto.getOriginalPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새로운 비밀번호가 현재 비밀번호와 동일한지 확인
+        if (passwordEncoder.matches(userPasswordUpdateDto.getChangePassword(), user.getPassword())) {
+            throw new IllegalArgumentException("새로운 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
+        }
+
+        // 새로운 비밀번호 형식 검증
+        if (!passwordEncoder.passwordVerification(userPasswordUpdateDto.getChangePassword())) {
+            throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
+        }
+
+        // 새로운 비밀번호 암호화 및 저장
+        String encodedNewPassword = passwordEncoder.encode(userPasswordUpdateDto.getChangePassword());
+        user.changePassword(encodedNewPassword);
+        userRepository.save(user);
+    }
+
+    // 프로필 수정
+    public void updateUserProfile(UserProfileUpdateDto userProfileUpdateDto) {
+        // 사용자 조회
+        User user = userRepository.findByEmail(userProfileUpdateDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 이름과 이메일 업데이트
+        if (userProfileUpdateDto.getName() != null && !userProfileUpdateDto.getName().trim().isEmpty()) {
+            user.updateName(userProfileUpdateDto.getName());
+        }
+
+        if (userProfileUpdateDto.getUpdateEmail() != null && !userProfileUpdateDto.getUpdateEmail().trim().isEmpty()) {
+            if (userRepository.findByEmail(userProfileUpdateDto.getUpdateEmail()).isPresent()) {
+                throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+            }
+            user.updateEmail(userProfileUpdateDto.getUpdateEmail());
+        }
+
+        // 사용자 정보 저장
+        userRepository.save(user);
+    }
+
     public String loginUser(UserLoginDto userLoginDto) {
         User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다."));
 
@@ -70,33 +117,6 @@ public class UserService {
     public UserProfileDto getUserProfile(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("없는 회원 정보입니다."));
         return new UserProfileDto(user.getEmail() , user.getName());
-    }
-
-    // 비밀번호 변경
-    public void changePassword(String email, String currentPassword, String newPassword) {
-        // 사용자 조회
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        // 새로운 비밀번호가 현재 비밀번호와 동일한지 확인
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("새로운 비밀번호는 현재 비밀번호와 동일할 수 없습니다.");
-        }
-
-        // 새로운 비밀번호 형식 검증
-        if (!passwordEncoder.passwordVerification(newPassword)) {
-            throw new IllegalArgumentException("비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다.");
-        }
-
-        // 새로운 비밀번호 암호화 및 저장
-        String encodedNewPassword = passwordEncoder.encode(newPassword);
-        user.changePassword(encodedNewPassword);
-        userRepository.save(user);
     }
 
     public User findUserByEmail(String email)
