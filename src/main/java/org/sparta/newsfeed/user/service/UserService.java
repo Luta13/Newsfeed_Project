@@ -116,11 +116,11 @@ public class UserService {
         }
 
         // refresh token
-        String refresh = jwtUtil.createToken(user.getUserId() , user.getEmail() , "REFRESH");
+        String refresh = jwtUtil.createToken(user.getUserId(), user.getEmail(), "REFRESH");
         user.updateToken(refresh);
         userRepository.save(user);
 
-        return jwtUtil.createToken(user.getUserId() , user.getEmail() , "ACCESS");
+        return jwtUtil.createToken(user.getUserId(), user.getEmail(), "ACCESS");
     }
 
     public void logoutUser(Long userId) {
@@ -131,12 +131,12 @@ public class UserService {
 
     public UserProfileDto getProfile(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("조회 도중 에러가 발생했습니다."));
-        return new UserProfileDto(user.getEmail() , user.getName());
+        return new UserProfileDto(user.getEmail(), user.getName());
     }
 
     public UserProfileDto getUserProfile(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("없는 회원 정보입니다."));
-        return new UserProfileDto(user.getEmail() , user.getName());
+        return new UserProfileDto(user.getEmail(), user.getName());
     }
 
     public User findUserByEmail(String email) {
@@ -152,12 +152,9 @@ public class UserService {
             throw new IllegalArgumentException("이메일 혹은 비밀번호가 맞지 않습니다.");
         }
 
-        // refresh token
-        String refresh = jwtUtil.createToken(user.getUserId() , user.getEmail() , "REFRESH");
-        user.updateToken(refresh);
-        userRepository.save(user);
-
-        return jwtUtil.createToken(user.getUserId() , user.getEmail() , "ACCESS");
+        if (!jwtUtil.validateToken(user.getRefreshToken(), "REFRESH")) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+        return jwtUtil.createToken(user.getUserId(), user.getEmail(), "ACCESS");
     }
-
 }
