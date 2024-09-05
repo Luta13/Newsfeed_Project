@@ -1,5 +1,6 @@
 package org.sparta.newsfeed.board.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.board.dto.BoardCreateRequestDto;
 import org.sparta.newsfeed.board.dto.BoardGetResponseDto;
@@ -24,7 +25,7 @@ public class BoardController {
 
     //게시물 작성
     @PostMapping
-    public ResponseEntity<ResponseDto<String>> createBoard(@Auth AuthUser authUser , @RequestBody BoardCreateRequestDto boardCreateRequestDto) {
+    public ResponseEntity<ResponseDto<String>> createBoard(@Auth AuthUser authUser , @Valid @RequestBody BoardCreateRequestDto boardCreateRequestDto) {
         boardService.createBoard(authUser , boardCreateRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(200 ,"" , "게시물 작성이 완료되었습니다."));
     }
@@ -35,7 +36,7 @@ public class BoardController {
     }
     //게시물 수정
     @PatchMapping("/{boardId}")
-    public ResponseEntity<ResponseDto<String>> updateBoard(@Auth AuthUser authUser , @PathVariable Long boardId, @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<String>> updateBoard(@Auth AuthUser authUser , @PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
         boardService.updateBoard(authUser , boardId, boardUpdateRequestDto);;
         return ResponseEntity.ok(new ResponseDto<>(200, "","게시물 수정이 완료되었습니다."));
     }

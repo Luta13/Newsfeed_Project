@@ -1,7 +1,7 @@
 package org.sparta.newsfeed.friend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.dto.ResponseDto;
@@ -20,19 +20,19 @@ public class FriendController {
 
     private final FriendService friendService;
     @PostMapping("/request")
-    public ResponseEntity<ResponseDto<String>> requestFriends(@Auth AuthUser authUser, @RequestBody FriendDto friendDto) {
+    public ResponseEntity<ResponseDto<String>> requestFriends(@Auth AuthUser authUser, @Valid @RequestBody FriendDto friendDto) {
         friendService.requestFriends(authUser, friendDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "친구추가 요청이 완료되었습니다."));
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseDto<String>> cancelRequestFriends(@Auth AuthUser authUser,@RequestBody FriendDto friendDto) {
+    public ResponseEntity<ResponseDto<String>> cancelRequestFriends(@Auth AuthUser authUser,@Valid @RequestBody FriendDto friendDto) {
         friendService.cancelRequestFriends(authUser,friendDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "친구추가 요청이 반려되엇습니다."));
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<ResponseDto<String>> deleteFriends(@Auth AuthUser authUser,@RequestBody FriendDto friendDto) {
+    public ResponseEntity<ResponseDto<String>> deleteFriends(@Auth AuthUser authUser,@Valid @RequestBody FriendDto friendDto) {
         friendService.deleteFriends(authUser, friendDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "친구삭제가 완료되었습니다."));
     }
@@ -48,12 +48,12 @@ public class FriendController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<ResponseDto<String>> acceptFriends(@Auth AuthUser authUser,@RequestBody FriendDto friendDto) {
+    public ResponseEntity<ResponseDto<String>> acceptFriends(@Auth AuthUser authUser,@Valid @RequestBody FriendDto friendDto) {
         friendService.acceptFriends(authUser,friendDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "친구 요청 승인이 완료되었습니다."));
     }
     @PostMapping("/reject")
-    public ResponseEntity<ResponseDto<String>> rejectFriends(@Auth AuthUser authUser,@RequestBody FriendDto friendDto)
+    public ResponseEntity<ResponseDto<String>> rejectFriends(@Auth AuthUser authUser,@Valid @RequestBody FriendDto friendDto)
     {
         friendService.rejectFriends(authUser,friendDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "친구 요청이 거절되었습니다."));
