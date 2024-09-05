@@ -477,7 +477,9 @@ Response Body
 
 ## 댓글 관리 API
 <img width="1189" alt="스크린샷 2024-09-05 오후 4 22 53" src="https://github.com/user-attachments/assets/1efef57f-2f53-4872-9b14-7b86f930f0ca">
+
 ### 댓글 작성
+
 경로 : comments/boards/{board_id}
 
 메서드 : POST
