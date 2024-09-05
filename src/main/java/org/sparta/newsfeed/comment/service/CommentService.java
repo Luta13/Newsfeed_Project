@@ -46,21 +46,24 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    public CommentDto updateComment(Long commentId, String commentContent, AuthUser authUser) {
 
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+    public void updateComment(Long commentId, String commentContent, AuthUser authUser) {
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_EDIT);
         }
 
         comment.setContent(commentContent);
-        return convertToDto(commentRepository.save(comment));
+        convertToDto(commentRepository.save(comment));
     }
 
     public void deleteComment(Long commentId, AuthUser authUser) {
 
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));;
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_DELETE);
