@@ -3,8 +3,10 @@ package org.sparta.newsfeed.board.service;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.entity.BoardLike;
+import org.sparta.newsfeed.board.exception.BoardLikeException;
 import org.sparta.newsfeed.board.repository.BoardLikeRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.common.exception.code.ErrorCode;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class BoardLikeService {
 
         //본인 게시물은 좋아요 불가능
         if (board.getUser().getUserId().equals(authUser.getUserId())) {
-            throw new IllegalArgumentException("본인 게시물 좋아요 불가능");
+            throw new BoardLikeException(ErrorCode.CANNOT_LIKE_OWN_BOARD);
         }
 
         if (Objects.isNull(boardLikeRepository.findByUserAndBoard(user, board))) {
@@ -36,7 +38,7 @@ public class BoardLikeService {
 
             boardLikeRepository.save(boardLike);
         } else {
-            throw new IllegalArgumentException("더 이상 누를 수 없습니다.");
+            throw new BoardLikeException(ErrorCode.LIKE_LIMIT_EXCEEDED);
         }
     }
 
@@ -48,7 +50,7 @@ public class BoardLikeService {
         if (Objects.nonNull(boardLike)) {
             boardLikeRepository.delete(boardLike);
         } else {
-            throw new IllegalArgumentException("좋아요가 눌러지지 않은 게시물입니다.");
+            throw new BoardLikeException(ErrorCode.LIKE_NOT_FOUND);
         }
     }
 }

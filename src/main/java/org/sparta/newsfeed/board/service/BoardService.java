@@ -8,6 +8,8 @@ import org.sparta.newsfeed.board.dto.BoardUpdateRequestDto;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.repository.BoardRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.common.exception.code.ErrorCode;
+import org.sparta.newsfeed.common.exception.custom.ForbiddenException;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -41,7 +43,7 @@ public class BoardService {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
 
         if (!board.getUser().getUserId().equals(authUser.getUserId())) {
-            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+            throw new ForbiddenException(ErrorCode.AUTHOR_ONLY_CAN_EDIT);
         }
 
         board.update(boardUpdateRequestDto.getTitle(), boardUpdateRequestDto.getContent());
@@ -52,7 +54,7 @@ public class BoardService {
         Board board = boardRepository.findByIdOrElseThrow(boardId);
 
         if (!board.getUser().getUserId().equals(authUser.getUserId())) {
-            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+            throw new ForbiddenException(ErrorCode.AUTHOR_ONLY_CAN_DELETE);
         }
 
         boardRepository.delete(board);

@@ -9,8 +9,8 @@ public enum ErrorCode {
 
     // 400 Bad Request: 클라이언트의 요청이 잘못되어 서버가 처리할 수 없을 때 발생하는 에러입니다. 주로 파라미터나 요청 형식의 오류에 사용됩니다.
     SELF_FRIEND_REQUEST_NOT_ALLOWED(400,"자신에게 친구 요청을 할 수 없습니다."),
-    CANNOT_LIKE_OWN_BOARD(400,"본인 게시물 좋아요 불가능"),
-    LIKE_LIMIT_EXCEEDED(400,"더 이상 누를 수 없습니다."),
+    CANNOT_LIKE_OWN_BOARD(400,"본인의 게시물은 좋아요를 누를 수 없습니다."),
+    LIKE_LIMIT_EXCEEDED(400,"좋아요가 이미 눌려진 상태입니다."),
     LIKE_NOT_FOUND(400,"좋아요가 눌러지지 않은 게시물입니다."),
     INVALID_PASSWORD_FORMAT(400,"비밀번호는 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함하며, 최소 8글자 이상이어야 합니다."),
     INVALID_EMAIL_OR_PASSWORD(400,"이메일 혹은 비밀번호가 맞지 않습니다."),
