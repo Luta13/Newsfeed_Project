@@ -26,11 +26,16 @@ public class Comment extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-//
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
-//
+
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
     private List<CommentLike> commentLikeList;
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }
