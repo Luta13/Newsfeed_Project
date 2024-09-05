@@ -5,14 +5,16 @@ import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.entity.Comment;
+import org.sparta.newsfeed.comment.exception.custom.NoSuchElementException;
 import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.comment.repository.CommentRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.common.exception.code.ErrorCode;
+import org.sparta.newsfeed.comment.exception.custom.CommentAuthorizationException;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,21 +23,34 @@ import java.util.stream.Collectors;
 @Transactional
 public class CommentService {
 
-    private final CommentRepository commentRepository;
     private final BoardService boardService;
     private final UserService userService;
+    private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
     public void createComment(CommentDto commentDto, AuthUser authUser, Long boardId) {
+
         Board board = boardService.findById(boardId);
+        if (board == null) {
+            throw new NoSuchElementException(ErrorCode.BOARD_NOT_FOUND);
+        }
+
         User user = userService.findById(authUser.getUserId());
+        if (user == null) {
+            throw new NoSuchElementException(ErrorCode.USER_NOT_FOUND);
+        }
+
         Comment comment = new Comment(null, commentDto.getCommentContent(), user, board, null);
         commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByBoard(Long boardId) {
-        boardService.findById(boardId);
+
+        Board board = boardService.findById(boardId);
+        if (board == null) {
+            throw new NoSuchElementException(ErrorCode.BOARD_NOT_FOUND);
+        }
 
         List<Comment> comments = commentRepository.findByBoardId(boardId);
 
@@ -45,36 +60,40 @@ public class CommentService {
     }
 
     public CommentDto updateComment(Long commentId, String commentContent, AuthUser authUser) {
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
-            throw new IllegalArgumentException("작성자 본인만 댓글을 수정할 수 있습니다.");
+            throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_EDIT);
         }
 
         comment.setContent(commentContent);
         return convertToDto(commentRepository.save(comment));
     }
 
-    public void deleteComment(Long commentId, AuthUser user) {
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+    public void deleteComment(Long commentId, AuthUser authUser) {
 
-        if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new IllegalArgumentException("작성자 본인만 댓글을 삭제할 수 있습니다.");
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
+            throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_DELETE);
         }
 
         commentRepository.deleteById(commentId);
     }
 
     private CommentDto convertToDto(Comment comment) {
-
+        Board board = comment.getBoard();
         int commentLikeCount = commentLikeRepository.countByComment(comment);
 
         return new CommentDto(
                 comment.getContent(),
                 commentLikeCount,
                 comment.getUser().getName(),
-                comment.getBoard().getTitle(),
-                comment.getBoard().getContent(),
+                board.getTitle(),
+                board.getContent(),
                 comment.getCreatedAt(),
                 comment.getModifiedAt()
         );
