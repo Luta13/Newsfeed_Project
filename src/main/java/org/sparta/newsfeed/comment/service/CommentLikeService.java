@@ -3,11 +3,14 @@ package org.sparta.newsfeed.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.entity.CommentLike;
+import org.sparta.newsfeed.comment.exception.custom.AlreadyLikedCommentException;
+import org.sparta.newsfeed.comment.exception.custom.LikeDoesNotExistException;
+import org.sparta.newsfeed.comment.exception.custom.NoSuchElementException;
 import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.comment.repository.CommentRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
+import org.sparta.newsfeed.common.exception.code.ErrorCode;
 import org.sparta.newsfeed.user.entity.User;
-import org.sparta.newsfeed.user.repository.UserRepository;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +25,19 @@ public class CommentLikeService {
     private final UserService userService;
 
     public void likeComment(Long commentId, AuthUser authUser) {
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
 
         User user = userService.findById(authUser.getUserId());
 
+        if (user == null) {
+            throw new NoSuchElementException(ErrorCode.USER_NOT_FOUND);
+        }
+
         boolean alreadyLiked = commentLikeRepository.existsByCommentAndUser(comment, user);
         if (alreadyLiked) {
-            throw new IllegalArgumentException("이미 이 댓글에 좋아요를 눌렀습니다.");
+            throw new AlreadyLikedCommentException(ErrorCode.ALREADY_LIKED_COMMENT);
         }
 
         CommentLike commentLike = new CommentLike(null, user, comment);
@@ -36,12 +45,14 @@ public class CommentLikeService {
     }
 
     public void unlikeComment(Long commentId, AuthUser authUser) {
-        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
 
         User user = userService.findById(authUser.getUserId());
 
         CommentLike commentLike = commentLikeRepository.findByCommentAndUser(comment, user)
-                .orElseThrow(() -> new IllegalArgumentException("좋아요가 존재하지 않습니다."));
+                .orElseThrow(() -> new LikeDoesNotExistException(ErrorCode.LIKE_DOES_NOT_EXIST));
 
         commentLikeRepository.delete(commentLike);
     }

@@ -7,6 +7,7 @@ import org.sparta.newsfeed.common.exception.code.ErrorCode;
 import org.sparta.newsfeed.common.exception.custom.BadRequestException;
 import org.sparta.newsfeed.common.exception.custom.ConflictException;
 import org.sparta.newsfeed.common.exception.custom.ForbiddenException;
+import org.sparta.newsfeed.common.exception.custom.NotFoundException;
 import org.sparta.newsfeed.friend.dto.FriendDto;
 import org.sparta.newsfeed.friend.dto.FriendResponseDto;
 import org.sparta.newsfeed.friend.entity.Friend;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -31,16 +33,17 @@ public class FriendService {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-       /*예외처리*/
-
-        if (user.equals(requestUser)){
+        // 자기 자신한테 친추는 불가능
+        if (user.getUserId().equals(requestUser.getUserId())){
             throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
-        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user,requestUser).orElse(null); // Baseid와 FriendId가 들어온 값과 똑같은 Friend객체 가져옴 즉 친구요청을 했거나 친구인 상태인지 검증하기 위함
-        if(isAlreadyFriends != null) {
-            if (isAlreadyFriends.isApplyYn()) {
+
+        // Baseid와 FriendId가 들어온 값과 똑같은 Friend객체 가져옴 즉 친구요청을 했거나 친구인 상태인지 검증하기 위함
+        Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user , requestUser);
+        if(isAlreadyFriends.isPresent()) {
+            if (isAlreadyFriends.get().isApplyYn()) {
                 throw new ConflictException(ErrorCode.ALREADY_FRIEND);
-            } else if (isAlreadyFriends.isApplyYn() == false) {
+            } else {
                 throw new ConflictException(ErrorCode.ALREADY_FRIEND_REQUESTED);
             }
         }
@@ -48,11 +51,6 @@ public class FriendService {
             Friend friend = new Friend(requestUser,user, false); // 새로운 Friend객체 생성, applyYn = fals은 요청 대기상태
             friendRepository.save(friend);
         }
-
-
-
-
-
     }
 
     /*유저가 친구 요청을 반려하는 메서드*/
@@ -60,74 +58,50 @@ public class FriendService {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-        /*예외 처리*/
-
-        if (user.equals(requestUser)) {
-            throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
+        Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user , requestUser);
+        if (isAlreadyFriends.isPresent()) {
+            if (isAlreadyFriends.get().isApplyYn()) {
+                // 이미 친구인 사람은 반려가 불가능함
+                throw new BadRequestException(ErrorCode.ALREADY_FRIEND_NOT_DELETE);
+            } else {
+                friendRepository.delete(isAlreadyFriends.get());
+            }
+        } else {
+            // 요청이 없는 친구 throw 처리
+            throw new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
         }
-        Friend friend = friendRepository.findByBaseIdAndFriendId(requestUser, user)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
-        if(/*거짓*/!friend.isApplyYn())
-        {
-            friendRepository.delete(friend);
-        }
-        else
-        {
-            throw new ConflictException(ErrorCode.ALREADY_FRIEND);
-        }
-
-
     }
 
     public void deleteFriends(AuthUser authUser, FriendDto friendDto) {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-        /*예외 처리*/
+        Optional<Friend> friend = friendRepository.findByBaseIdAndFriendIdAndApplyYnTrue(user, requestUser);
+        Optional<Friend> reverseFriend = friendRepository.findByBaseIdAndFriendIdAndApplyYnTrue(requestUser, user);
 
-        Friend friend = friendRepository.findByBaseIdAndFriendId(user, requestUser).orElseThrow
-                (() -> new ForbiddenException(ErrorCode.NOT_A_FRIEND));
-        Friend reverseFriend = friendRepository.findByBaseIdAndFriendId(requestUser, user).orElseThrow
-                (() -> new ForbiddenException(ErrorCode.NOT_A_FRIEND));
-
-
-        if (friend.isApplyYn()) {
-            friendRepository.delete(friend);
-            friendRepository.delete(reverseFriend);
+        if (friend.isPresent() && reverseFriend.isPresent()) {
+            friendRepository.delete(friend.get());
+            friendRepository.delete(reverseFriend.get());
+        } else {
+            throw new ForbiddenException(ErrorCode.NOT_A_FRIEND);
         }
-        else {
-            throw new ForbiddenException((ErrorCode.NOT_A_FRIEND));
-        }
-
-    }
-    public void deleteFriends(User user)
-    {
-         friendRepository.deleteByBaseIdOrFriendId(user,user);
     }
 
     public List<FriendResponseDto> getFriends(AuthUser authUser) {
-        List<Friend> baseFriends;
         User user = userService.findByEmail(authUser.getEmail());
-        baseFriends = friendRepository.findByFriendIdAndApplyYnTrue(user);
+        List<Friend> friends = friendRepository.findByBaseIdAndApplyYnTrue(user);
 
-
-
-
-        return baseFriends.stream().map(friend1 -> new FriendResponseDto(
-                friend1.getBaseId().getName(), friend1.getBaseId().getCreatedAt())).toList();
+        return friends.stream().map(friend -> new FriendResponseDto(
+                friend.getBaseId().getName(), friend.getBaseId().getCreatedAt())).toList();
     }
 
-    /*유저가 친구 요청을 보낸 리스트를 갖고옴*/
     public List<FriendResponseDto> getRequestFriends(AuthUser authUser) {
-        List<Friend> requestFriends;
         User user = userService.findByEmail(authUser.getEmail());
-        requestFriends = friendRepository.findByFriendIdAndApplyYnFalse(user);
+        List<Friend> requestFriends = friendRepository.findByFriendIdAndApplyYnFalse(user);
 
         if(requestFriends.isEmpty()) {
-            throw new ForbiddenException(ErrorCode.NOT_A_FRIEND);
+            throw new NotFoundException(ErrorCode.FRIEND_NOT_FOUND);
         }
-
-
 
         return requestFriends.stream().map(friend -> new FriendResponseDto(
                 friend.getBaseId().getName(), friend.getBaseId().getCreatedAt())).toList();
@@ -137,46 +111,43 @@ public class FriendService {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-
-        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user,requestUser).orElse(null);
-        if(user.equals(requestUser)) {
-            throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
-        }
-        if(isAlreadyFriends.isApplyYn())
-        {
-            throw new ConflictException(ErrorCode.ALREADY_FRIEND);
-        }
-        else {
-            Friend friend = friendRepository.findByBaseIdAndFriendId(user, requestUser).orElseThrow
-                    (() -> new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
-            friend.setApplyYn(true);
-            friendRepository.save(friend);
-
-            Friend reverseFriend = new Friend(requestUser, user, true);
-            friendRepository.save(reverseFriend);
+        if(user.getUserId().equals(requestUser.getUserId())) {
+            throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_APPROVAL_NOT_ALLOWED);
         }
 
+        Optional<Friend> me = friendRepository.findByBaseIdAndFriendIdAndApplyYnFalse(requestUser,user);
+
+        if (me.isPresent()) {
+            Friend friend1 = me.get();
+            friend1.updateApplyYn(true);
+            Friend friend2 = new Friend(user , requestUser , true);
+            friendRepository.save(friend1);
+            friendRepository.save(friend2);
+        } else {
+            throw new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
+        }
     }
 
     public void rejectFriends(AuthUser authUser,FriendDto friendDto) {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-        if(user.equals(requestUser)) {
+        if(user.getUserId().equals(requestUser.getUserId())) {
             throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
-        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user,requestUser).orElse(null);
-        if(/*거짓*/isAlreadyFriends.isApplyYn()){
-            friendRepository.delete(isAlreadyFriends);
-        }
-        else if(isAlreadyFriends.isApplyYn())
-        {
-            throw new ConflictException(ErrorCode.ALREADY_FRIEND);
-        }
 
+        Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendIdAndApplyYnFalse(requestUser,user);
+
+        if (isAlreadyFriends.isPresent()) {
+            if (isAlreadyFriends.get().isApplyYn()) {
+                // 이미 친구라면 거절 못함
+                throw new ConflictException(ErrorCode.ALREADY_FRIEND_NOT_DELETE);
+            } else {
+                friendRepository.delete(isAlreadyFriends.get());
+            }
+        } else {
+            // 거절할 요청이 없음
+            throw new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
+        }
     }
-
-
-
-
 }

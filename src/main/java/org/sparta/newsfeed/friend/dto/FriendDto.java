@@ -7,10 +7,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class FriendDto {
-
     private String requestEmail;
-
-
-
-
 }
