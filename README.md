@@ -1,4 +1,4 @@
-# 23조 Newsfeed_Project
+# Newsfeed_Project
 
 ## 📋 API 명세서
 ### 회원 정보 관리 API
