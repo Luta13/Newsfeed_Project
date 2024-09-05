@@ -508,7 +508,7 @@ Response Body
 
 게시물이 있는지 검증
 
-## 댓글 수정
+### 댓글 수정
 경로 : comments/{comment_id}
 
 메서드 : PATCH
@@ -531,7 +531,7 @@ Response Body
 
 게시물이 있는지 검증
 
-## 댓글 삭제
+### 댓글 삭제
 경로 : comments/{comment_id}
 
 메서드 : DELETE
@@ -540,7 +540,7 @@ Response Body
 
 게시물이 있는지 검증
 
-## 댓글 좋아요
+### 댓글 좋아요
 경로 : comments/{comment_id}/like
 
 메서드 : POST
@@ -557,7 +557,7 @@ Response Body
 
 댓글이 있는지 검증
 
-## 댓글 좋아요 취소
+### 댓글 좋아요 취소
 경로 : comments/{comment_id}/like-cancel
 
 메서드 : DELETE
