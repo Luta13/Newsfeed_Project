@@ -138,7 +138,7 @@ public class FriendService {
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
 
-        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(requestUser,user).orElse(null);
+        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user,requestUser).orElse(null);
         if(user.equals(requestUser)) {
             throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
@@ -165,7 +165,7 @@ public class FriendService {
         if(user.equals(requestUser)) {
             throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
-        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(requestUser,user).orElse(null);
+        Friend isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user,requestUser).orElse(null);
         if(/*거짓*/isAlreadyFriends.isApplyYn()){
             friendRepository.delete(isAlreadyFriends);
         }
