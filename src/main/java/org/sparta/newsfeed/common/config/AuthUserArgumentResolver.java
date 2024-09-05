@@ -1,4 +1,4 @@
-package org.sparta.newsfeed.common.resolver;
+package org.sparta.newsfeed.common.config;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;

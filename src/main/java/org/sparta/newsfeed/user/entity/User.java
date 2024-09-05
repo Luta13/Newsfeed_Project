@@ -10,6 +10,7 @@ import org.sparta.newsfeed.comment.entity.Comment;
 import org.sparta.newsfeed.comment.entity.CommentLike;
 import org.sparta.newsfeed.common.entity.Timestamped;
 import org.sparta.newsfeed.friend.entity.Friend;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,6 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    private String refreshToken;
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
@@ -50,15 +49,25 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
-    public void updateToken(String token) {
-        this.refreshToken = token;
-    }
-
-    public User(String email, String password, String name, String refreshToken, UserStatusEnum status) {
+    public User(String email, String password, String name, UserStatusEnum status) {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.refreshToken = refreshToken;
         this.status = status;
+    }
+
+    // 비밀번호 변경
+    public void changePassword(String changePassword) {
+        this.password = changePassword;
+    }
+
+    // 이름 변경
+    public void updateName(String updateName) {
+        this.name = updateName;
+    }
+
+    // 상태 변경
+    public void updateStatus(UserStatusEnum updateStatus) {
+        this.status = updateStatus;
     }
 }

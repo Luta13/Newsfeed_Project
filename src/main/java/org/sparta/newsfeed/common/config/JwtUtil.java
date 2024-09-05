@@ -1,4 +1,4 @@
-package org.sparta.newsfeed.common.jwt;
+package org.sparta.newsfeed.common.config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +16,9 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+    public static final String ACCESS = "ACCESS";
+    public static final String REFRESH = "REFRESH";
+
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer ";
 
@@ -23,13 +26,13 @@ public class JwtUtil {
     private String secretAccessKey;
     private Key accessKey;
 
-    private final long TOKEN_ACCESS_TIME = 60 * 60 * 1000L;
+    private final long TOKEN_ACCESS_TIME = 60 * 60 * 24 * 1000L;
 
     @Value("${jwt.secret.refresh.key}")
     private String secretRefreshKey;
     private Key refreshKey;
 
-    private final long TOKEN_REFRESH_TIME = 60 * 60 * 5 * 1000L;
+    private final long TOKEN_REFRESH_TIME = 60 * 60 * 24 * 1000L;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
