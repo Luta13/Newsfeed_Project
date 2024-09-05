@@ -1,6 +1,7 @@
 package org.sparta.newsfeed.user.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sparta.newsfeed.common.annotation.Auth;
 import org.sparta.newsfeed.common.dto.AuthUser;
@@ -22,21 +23,21 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<ResponseDto<String>> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         userService.registerUser(userRegisterDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원가입 완료되었습니다."));
     }
 
     // 회원탈퇴
     @DeleteMapping("/unregister")
-    public ResponseEntity<ResponseDto<String>> deleteAccount(@Auth AuthUser authUser, @RequestBody UserUnregisterDto userUnregisterDto) {
+    public ResponseEntity<ResponseDto<String>> deleteAccount(@Auth AuthUser authUser, @Valid @RequestBody UserUnregisterDto userUnregisterDto) {
         userService.deleteAccount(authUser, userUnregisterDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "회원탈퇴가 완료되었습니다."));
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<String>> loginUser(@RequestBody UserLoginDto userLoginDto , HttpServletResponse response) {
+    public ResponseEntity<ResponseDto<String>> loginUser(@Valid @RequestBody UserLoginDto userLoginDto , HttpServletResponse response) {
         List<String> tokens =  userService.loginUser(userLoginDto);
         response.addHeader("ACCESS_TOKEN", tokens.get(0));
         response.addHeader("REFRESH_TOKEN", tokens.get(1));
@@ -57,14 +58,14 @@ public class UserController {
 
     // 비밀번호 변경
     @PostMapping("/change-password")
-    public ResponseEntity<ResponseDto<String>> changePassword(@Auth AuthUser authUser, @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {
+    public ResponseEntity<ResponseDto<String>> changePassword(@Auth AuthUser authUser,@Valid @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {
         userService.changePassword(authUser, userPasswordUpdateDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "비밀번호가 변경되었습니다."));
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<ResponseDto<String>> updateProfile(@Auth AuthUser authUser, @RequestBody UserProfileUpdateDto userProfileUpdateDto) {
+    public ResponseEntity<ResponseDto<String>> updateProfile(@Auth AuthUser authUser, @Valid @RequestBody UserProfileUpdateDto userProfileUpdateDto) {
         userService.updateUserProfile(authUser, userProfileUpdateDto);
         return ResponseEntity.ok(new ResponseDto<>(200 , "" , "프로필이 수정되었습니다."));
     }
