@@ -38,6 +38,18 @@ public class FriendService {
             throw new BadRequestException(ErrorCode.SELF_FRIEND_REQUEST_NOT_ALLOWED);
         }
 
+        Optional<Friend> otherIsAlReadyFriends = friendRepository.findByBaseIdAndFriendId(requestUser , user);
+        // 만약 친구 요청온 친구한테 내쪽에서 요청을 보낼 경우?
+        if (otherIsAlReadyFriends.isPresent()) {
+            Friend friend1 = otherIsAlReadyFriends.get();
+            friend1.updateApplyYn(true);
+            Friend friend2 = new Friend(user , requestUser, true);
+
+            friendRepository.save(friend1);
+            friendRepository.save(friend2);
+            return;
+        }
+
         // Baseid와 FriendId가 들어온 값과 똑같은 Friend객체 가져옴 즉 친구요청을 했거나 친구인 상태인지 검증하기 위함
         Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user , requestUser);
         if(isAlreadyFriends.isPresent()) {
@@ -48,7 +60,7 @@ public class FriendService {
             }
         }
         else {
-            Friend friend = new Friend(requestUser,user, false); // 새로운 Friend객체 생성, applyYn = fals은 요청 대기상태
+            Friend friend = new Friend(user , requestUser, false); // 새로운 Friend객체 생성, applyYn = fals은 요청 대기상태
             friendRepository.save(friend);
         }
     }
