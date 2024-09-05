@@ -48,12 +48,13 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<ResponseDto<String>> deleteComment(
             @PathVariable Long commentId,
             @Auth AuthUser authUser
     ) {
         commentService.deleteComment(commentId, authUser);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseDto<String> response = new ResponseDto<>(204, null, "댓글이 삭제되었습니다.");
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{commentId}/like")
