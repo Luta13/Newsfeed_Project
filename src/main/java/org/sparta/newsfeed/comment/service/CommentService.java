@@ -5,12 +5,12 @@ import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.comment.dto.CommentDto;
 import org.sparta.newsfeed.comment.entity.Comment;
-import org.sparta.newsfeed.comment.exception.custom.NoSuchElementException;
+import org.sparta.newsfeed.comment.exception.NoSuchElementException;
 import org.sparta.newsfeed.comment.repository.CommentLikeRepository;
 import org.sparta.newsfeed.comment.repository.CommentRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.exception.code.ErrorCode;
-import org.sparta.newsfeed.comment.exception.custom.CommentAuthorizationException;
+import org.sparta.newsfeed.comment.exception.CommentAuthorizationException;
 import org.sparta.newsfeed.user.entity.User;
 import org.sparta.newsfeed.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -29,16 +29,8 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
 
     public void createComment(CommentDto commentDto, AuthUser authUser, Long boardId) {
-
         Board board = boardService.findById(boardId);
-        if (board == null) {
-            throw new NoSuchElementException(ErrorCode.BOARD_NOT_FOUND);
-        }
-
         User user = userService.findById(authUser.getUserId());
-        if (user == null) {
-            throw new NoSuchElementException(ErrorCode.USER_NOT_FOUND);
-        }
 
         Comment comment = new Comment(null, commentDto.getCommentContent(), user, board, null);
         commentRepository.save(comment);
@@ -46,12 +38,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByBoard(Long boardId) {
-
-        Board board = boardService.findById(boardId);
-        if (board == null) {
-            throw new NoSuchElementException(ErrorCode.BOARD_NOT_FOUND);
-        }
-
+        boardService.findById(boardId);
         List<Comment> comments = commentRepository.findByBoardId(boardId);
 
         return comments.stream()
@@ -61,8 +48,7 @@ public class CommentService {
 
     public CommentDto updateComment(Long commentId, String commentContent, AuthUser authUser) {
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_EDIT);
@@ -74,8 +60,7 @@ public class CommentService {
 
     public void deleteComment(Long commentId, AuthUser authUser) {
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorCode.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         if (!comment.getUser().getUserId().equals(authUser.getUserId())) {
             throw new CommentAuthorizationException(ErrorCode.COMMENT_AUTHOR_ONLY_CAN_DELETE);
