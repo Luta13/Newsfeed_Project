@@ -53,8 +53,7 @@ public class CommentController {
             @Auth AuthUser authUser
     ) {
         commentService.deleteComment(commentId, authUser);
-        ResponseDto<String> response = new ResponseDto<>(204, null, "댓글이 삭제되었습니다.");
-        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.NO_CONTENT.value() , "" , "댓글이 삭제되었습니다."));
     }
 
     @PostMapping("/{commentId}/like")
