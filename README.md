@@ -1,5 +1,25 @@
 # Newsfeed_Project
 
+## 📖 프로젝트 소개
+### 뉴스피드 프로젝트는 친구들의 가장 최근에 업데이트된 게시물들을 볼 수 있는 페이지를 구현했습니다.
+
+## 📚 기술 스택
+Java 17
+
+Spring Boot 3.3.3
+
+Spring Boot Validation
+
+Spring Boot JPA
+
+Mysql
+
+Lombok
+
+JWT
+
+Git
+
 ## 📋 API 명세서
 ### 회원 정보 관리 API
 <img width="1188" alt="스크린샷 2024-09-05 오후 4 21 45" src="https://github.com/user-attachments/assets/597ebb4c-e7ac-4cc8-beaa-673f0b75980c">
