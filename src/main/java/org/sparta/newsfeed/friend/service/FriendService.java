@@ -70,14 +70,9 @@ public class FriendService {
         User user = userService.findByEmail(authUser.getEmail());
         User requestUser = userService.findByEmail(friendDto.getRequestEmail());
 
-        Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendId(user , requestUser);
+        Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendIdAndApplyYnFalse(user , requestUser);
         if (isAlreadyFriends.isPresent()) {
-            if (isAlreadyFriends.get().isApplyYn()) {
-                // 이미 친구인 사람은 반려가 불가능함
-                throw new BadRequestException(ErrorCode.ALREADY_FRIEND_NOT_DELETE);
-            } else {
-                friendRepository.delete(isAlreadyFriends.get());
-            }
+            friendRepository.delete(isAlreadyFriends.get());
         } else {
             // 요청이 없는 친구 throw 처리
             throw new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
@@ -151,12 +146,7 @@ public class FriendService {
         Optional<Friend> isAlreadyFriends = friendRepository.findByBaseIdAndFriendIdAndApplyYnFalse(requestUser,user);
 
         if (isAlreadyFriends.isPresent()) {
-            if (isAlreadyFriends.get().isApplyYn()) {
-                // 이미 친구라면 거절 못함
-                throw new ConflictException(ErrorCode.ALREADY_FRIEND_NOT_DELETE);
-            } else {
-                friendRepository.delete(isAlreadyFriends.get());
-            }
+            friendRepository.delete(isAlreadyFriends.get());
         } else {
             // 거절할 요청이 없음
             throw new BadRequestException(ErrorCode.FRIEND_REQUEST_NOT_FOUND);
