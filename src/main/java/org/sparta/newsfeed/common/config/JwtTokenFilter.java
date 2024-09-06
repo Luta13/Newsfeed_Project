@@ -34,9 +34,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 // 토큰 검증
                 String token = jwtUtil.substringToken(tokenValue);
 
-                String type = "ACCESS";
+                String type = jwtUtil.ACCESS;
                 if (validateRefreshTokenUrl(url)) {
-                    type = "REFRESH";
+                    type = jwtUtil.REFRESH;
                 }
 
                 if (!jwtUtil.validateToken(token , type)) {
