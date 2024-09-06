@@ -1,12 +1,12 @@
 package org.sparta.newsfeed.board.service;
 
 import lombok.RequiredArgsConstructor;
-import org.sparta.newsfeed.board.dto.BoardCreateRequestDto;
-import org.sparta.newsfeed.board.dto.BoardGetResponseDto;
-import org.sparta.newsfeed.board.dto.BoardRequestDto;
-import org.sparta.newsfeed.board.dto.BoardUpdateRequestDto;
+import org.sparta.newsfeed.board.dto.*;
 import org.sparta.newsfeed.board.entity.Board;
 import org.sparta.newsfeed.board.repository.BoardRepository;
+import org.sparta.newsfeed.comment.dto.CommentDto;
+import org.sparta.newsfeed.comment.entity.Comment;
+import org.sparta.newsfeed.comment.repository.CommentRepository;
 import org.sparta.newsfeed.common.dto.AuthUser;
 import org.sparta.newsfeed.common.exception.code.ErrorCode;
 import org.sparta.newsfeed.common.exception.custom.ForbiddenException;
@@ -17,6 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +66,14 @@ public class BoardService {
     public Board findById(Long boardId) {
         return boardRepository.findByIdOrElseThrow(boardId);
     }
+
+    // html 파일에서 게시물 상세 조회 시 사용 (게시물 작성자, 게시물 좋아요 , 댓글 목록은 필요 없음)
+    @Transactional(readOnly = true)
+    public BoardDetailsResponseDto getBoardDetails(Long boardId) {
+        Board board = boardRepository.findByIdOrElseThrow(boardId);
+
+        return new BoardDetailsResponseDto(board.getBoardId(), board.getTitle(), board.getContent(), board.getUser().getName(), board.getBoardLikeList().size());
+    }
+
 
 }

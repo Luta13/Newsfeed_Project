@@ -10,15 +10,15 @@ public class ErrorResponse {
 
     private final int status;
 
-    private final String message;
+    private final String msg;
 
-    public ErrorResponse(int status, String message) {
+    public ErrorResponse(int status, String msg) {
 
         this.timestamp = LocalDateTime.now();
 
         this.status = status;
 
-        this.message = message;
+        this.msg = msg;
 
     }
 }

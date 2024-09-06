@@ -1,10 +1,8 @@
 package org.sparta.newsfeed.board.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.sparta.newsfeed.board.dto.BoardCreateRequestDto;
-import org.sparta.newsfeed.board.dto.BoardGetResponseDto;
-import org.sparta.newsfeed.board.dto.BoardRequestDto;
-import org.sparta.newsfeed.board.dto.BoardUpdateRequestDto;
+import org.sparta.newsfeed.board.dto.*;
 import org.sparta.newsfeed.board.service.BoardLikeService;
 import org.sparta.newsfeed.board.service.BoardService;
 import org.sparta.newsfeed.common.annotation.Auth;
@@ -24,7 +22,7 @@ public class BoardController {
 
     //게시물 작성
     @PostMapping
-    public ResponseEntity<ResponseDto<String>> createBoard(@Auth AuthUser authUser , @RequestBody BoardCreateRequestDto boardCreateRequestDto) {
+    public ResponseEntity<ResponseDto<String>> createBoard(@Auth AuthUser authUser , @Valid @RequestBody BoardCreateRequestDto boardCreateRequestDto) {
         boardService.createBoard(authUser , boardCreateRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(200 ,"" , "게시물 작성이 완료되었습니다."));
     }
@@ -33,6 +31,13 @@ public class BoardController {
     public ResponseEntity<ResponseDto<Page<BoardGetResponseDto>>> getBoard(@Auth AuthUser authUser, @ModelAttribute BoardRequestDto boardRequestDto) {
         return ResponseEntity.ok(new ResponseDto<>(200, boardService.getBoard(authUser, boardRequestDto), "조회에 성공했습니다."));
     }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<ResponseDto<BoardDetailsResponseDto>> getBoardDetails(@PathVariable Long boardId) {
+        BoardDetailsResponseDto boardDetails = boardService.getBoardDetails(boardId);
+        return ResponseEntity.ok(new ResponseDto<>(200, boardDetails, "게시물 조회에 성공했습니다."));
+    }
+
     //게시물 수정
     @PatchMapping("/{boardId}")
     public ResponseEntity<ResponseDto<String>> updateBoard(@Auth AuthUser authUser , @PathVariable Long boardId, @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 상세 보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="flex justify-center items-center min-h-screen">
+    <div id="post-container" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl relative">
+        <!-- 뒤로가기 버튼 하얀 네모 박스 안으로 이동 -->
+        <div class="absolute top-4 left-4 p-2 bg-white rounded-full shadow-lg">
+            <button onclick="goBack()" aria-label="뒤로가기">
+                <img src="/img/back-icon.svg" alt="뒤로가기" class="h-6 w-6" />
+            </button>
+        </div>
+        <h2 id="post-title" class="text-2xl font-bold text-center text-gray-900 mb-6">게시물 제목</h2>
+        <p id="post-author" class="text-sm text-gray-500">작성자: </p>
+        <p id="post-date" class="text-sm text-gray-500 mb-6">작성일: </p>
+
+        <!-- 게시글 수정 및 삭제 버튼 -->
+        <div class="flex justify-end space-x-4 mb-4">
+            <button id="edit-post" class="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600">수정</button>
+            <button id="delete-post" class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600">삭제</button>
+        </div>
+
+        <p id="post-content" class="mt-4 text-gray-700">게시물 내용</p>
+
+        <hr class="border-t-2 border-gray-300 my-6" />
+
+        <h3 class="text-xl font-semibold text-gray-900">댓글</h3>
+        <ul id="comments-list" class="mt-4 space-y-4">
+            <!-- 댓글 목록이 여기에 추가됩니다. -->
+        </ul>
+    </div>
+</div>
+
+<script src="/js/postView.js"></script>
+</body>
+</html>
