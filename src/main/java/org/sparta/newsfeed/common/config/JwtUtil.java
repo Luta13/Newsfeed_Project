@@ -49,8 +49,8 @@ public class JwtUtil {
     public String createToken(Long userId , String email , String type) {
         Date date = new Date();
 
-        Key key = type.equals("ACCESS") ? accessKey : refreshKey;
-        long time = type.equals("ACCESS") ? TOKEN_ACCESS_TIME : TOKEN_REFRESH_TIME;
+        Key key = type.equals(ACCESS) ? accessKey : refreshKey;
+        long time = type.equals(ACCESS) ? TOKEN_ACCESS_TIME : TOKEN_REFRESH_TIME;
 
         return BEARER_PREFIX +
                 Jwts.builder()
@@ -65,7 +65,7 @@ public class JwtUtil {
     // 토큰 검증
     public boolean validateToken(String token , String type) {
         try {
-            Key key = type.equals("ACCESS") ? accessKey : refreshKey;
+            Key key = type.equals(ACCESS) ? accessKey : refreshKey;
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true; // 유효한 토큰
         } catch (SecurityException | MalformedJwtException e) {
@@ -92,7 +92,7 @@ public class JwtUtil {
 
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token , String type) {
-        Key key = type.equals("ACCESS") ? accessKey : refreshKey;
+        Key key = type.equals(ACCESS) ? accessKey : refreshKey;
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
