@@ -70,4 +70,5 @@ public class User extends Timestamped {
     public void updateStatus(UserStatusEnum updateStatus) {
         this.status = updateStatus;
     }
+
 }

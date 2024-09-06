@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뉴스피드</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="flex justify-center items-center min-h-screen">
+    <div id="newsfeed-container" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <div class="flex justify-between mb-6">
+            <h2 class="text-2xl font-bold text-center text-gray-900">뉴스피드</h2>
+            <div class="flex space-x-4">
+                <button id="openProfileModal" aria-label="설정">
+                    <img src="/img/profile-icon.svg" alt="설정 보기" class="h-6 w-6" />
+                </button>
+                <button id="openFriendsModal" aria-label="친구 관리">
+                    <img src="/img/friends-icon.svg" alt="친구 관리 보기" class="h-6 w-6" />
+                </button>
+            </div>
+        </div>
+        <hr class="border-t-2 border-gray-300 mb-6" />
+
+        <ul id="newsfeed-list"></ul>
+
+        <div class="flex justify-center items-center mt-6">
+            <button id="prevPage" class="px-3 py-1 bg-gray-200 text-gray-600 rounded-md mx-1">이전</button>
+            <div id="pagination"></div>
+            <button id="nextPage" class="px-3 py-1 bg-gray-200 text-gray-600 rounded-md mx-1">다음</button>
+        </div>
+
+        <div class="flex justify-end mt-6">
+            <button id="createPostButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md" onclick="redirectToCreatePost()">
+                글 쓰기
+            </button>
+        </div>
+
+        <div class="mt-8 flex space-x-4 items-center">
+            <div class="flex space-x-2 items-center">
+                <select id="periodChoice" class="border-2 border-gray-300 rounded-md p-2">
+                    <option value="ALL">전체 기간</option>
+                    <option value="CUSTOM">기간 선택</option>
+                </select>
+            </div>
+
+            <div class="flex space-x-2 items-center">
+                <select id="sortOrder" class="border-2 border-gray-300 rounded-md p-2">
+                    <option value="LIKECNT">좋아요순</option>
+                    <option value="EXPAND">확장용</option>
+                </select>
+            </div>
+
+            <input type="text" id="searchQuery" placeholder="검색어를 입력하세요" class="border-2 border-gray-300 rounded-md p-2 flex-grow" />
+
+            <button id="searchButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md">검색</button>
+        </div>
+
+        <div id="datePickers" class="flex flex-col space-y-2 mt-4 hidden">
+            <input type="text" id="startDate" class="border-2 border-gray-300 rounded-md p-2 w-48 md:w-64" placeholder="YYYY-MM-DD 부터" onfocus="(this.type='date')" onblur="(this.type='text')" />
+            <input type="text" id="endDate" class="border-2 border-gray-300 rounded-md p-2 w-48 md:w-64" placeholder="YYYY-MM-DD 까지" onfocus="(this.type='date')" onblur="(this.type='text')" />
+        </div>
+    </div>
+</div>
+
+<!-- 프로필 수정 모달 -->
+<div id="profileModal" class="hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h3 class="text-xl font-semibold mb-4">설정</h3>
+        <button id="editProfile" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md mb-4">
+            프로필 수정
+        </button>
+        <button id="logoutButton" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md">
+            로그아웃
+        </button>
+        <button id="closeProfileModal" class="w-full bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-4">
+            닫기
+        </button>
+    </div>
+</div>
+
+<!-- 로그아웃 확인 모달 -->
+<div id="logoutModal" class="hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h3 class="text-xl font-semibold mb-4">정말 로그아웃 하시겠습니까?</h3>
+        <div class="flex justify-between">
+            <button id="confirmLogout" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md mr-2">예</button>
+            <button id="cancelLogout" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md ml-2">아니요</button>
+        </div>
+    </div>
+</div>
+
+<!-- 친구 관리 모달 -->
+<div id="friendsModal" class="hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h3 class="text-xl font-semibold mb-4">친구 관리</br>(스스로 구현하면서 연습해보세요)</h3>
+        <button id="manageFriends" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md mb-4">
+            친구 목록 관리
+        </button>
+        <button id="friendRequests" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md mb-4">
+            친구 요청 보내기
+        </button>
+        <button id="friendRequestsmanagement" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md mb-4">
+            친구 요청 관리
+        </button>
+        <button id="closeFriendsModal" class="w-full bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md">
+            닫기
+        </button>
+    </div>
+</div>
+
+<script src="/js/newsfeed.js"></script>
+</body>
+</html>
